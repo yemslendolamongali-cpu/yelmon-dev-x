@@ -93,6 +93,8 @@ generator = CodeGenerator()
 rag = RAGEngine()
 agent = YelmonAgent()
 
+_ensure_admin_account()
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -590,6 +592,28 @@ def static_files(filename):
 app_start_time = time.time()
 
 
+def _ensure_admin_account():
+    """Crée le compte admin par défaut s'il n'existe pas."""
+    admin_user = os.environ.get("YELMON_ADMIN_USER", "01yem's")
+    admin_pass = os.environ.get("YELMON_ADMIN_PASS", "Kanikayo00")
+    admin_name = os.environ.get("YELMON_ADMIN_NAME", "Yems junior lendola")
+    admin_email = os.environ.get("YELMON_ADMIN_EMAIL", "yemsjuniorlendola@gmail.com")
+    users = _read_json(USERS_FILE, {})
+    if admin_user not in users:
+        users[admin_user] = {
+            "password": hash_password(admin_pass),
+            "created_at": datetime.now(timezone.utc).isoformat(),
+            "email": admin_email,
+            "phone": None,
+            "display_name": admin_name,
+            "role": "admin",
+        }
+        _write_json(USERS_FILE, users)
+        print(f"[YELMON Dev X] Compte admin créé: {admin_user}")
+    else:
+        print(f"[YELMON Dev X] Compte admin existant: {admin_user}")
+
+
 def main():
     host = os.environ.get("YELMON_HOST", "0.0.0.0")
     port = int(os.environ.get("YELMON_PORT", "5001"))
@@ -599,6 +623,8 @@ def main():
     print(f"[YELMON Dev X] Torch: {'disponible' if HAS_TORCH else 'offline (templates)'}")
     print(f"[YELMON Dev X] RAG: {'scikit-learn' if HAS_SKLEARN else 'brouillon (base)'}")
     print(f"[YELMON Dev X] Données: {DATA_DIR}")
+
+    _ensure_admin_account()
 
     socketio.run(app, host=host, port=port, debug=debug,
                  use_reloader=debug, log_output=True,
