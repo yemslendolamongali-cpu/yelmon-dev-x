@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <defs>
+    <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#00e5ff"/>
+      <stop offset="1" stop-color="#ff2d95"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0" stop-color="#7b2dff"/>
+      <stop offset="1" stop-color="#00e5ff"/>
+    </linearGradient>
+    <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge>
+        <feMergeNode in="b"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="2"/>
+    </filter>
+  </defs>
+
+  <polygon points="100,10 178,55 178,145 100,190 22,145 22,55"
+           fill="none" stroke="url(#g1)" stroke-width="6" stroke-linejoin="round" filter="url(#glow)"/>
+
+  <polygon points="100,22 165,60 165,140 100,178 35,140 35,60"
+           fill="none" stroke="url(#g2)" stroke-width="2" opacity="0.5"/>
+
+  <g filter="url(#glow)">
+    <path d="M72,58 L100,96 L128,58 M100,96 L100,150"
+          fill="none" stroke="url(#g1)" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+    <path d="M72,58 L100,96 L128,58 M100,96 L100,150"
+          fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity="0.55"/>
+  </g>
+
+  <g fill="#7ef2ff">
+    <circle cx="100" cy="10" r="4" filter="url(#soft)"/>
+    <circle cx="178" cy="55" r="3.5" filter="url(#soft)"/>
+    <circle cx="178" cy="145" r="3.5" filter="url(#soft)"/>
+    <circle cx="100" cy="190" r="4" filter="url(#soft)"/>
+    <circle cx="22" cy="145" r="3.5" filter="url(#soft)"/>
+    <circle cx="22" cy="55" r="3.5" filter="url(#soft)"/>
+  </g>
+</svg>

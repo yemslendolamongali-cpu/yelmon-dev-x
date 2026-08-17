@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YELMON Dev X — Design 3 : Cyber Sunrise</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=DM+Mono:wght@400;500&display=swap');
+
+  :root{
+    --deep:#180a2e;
+    --purple:#8b3dff;
+    --pink:#ff3d81;
+    --orange:#ff9d2e;
+    --text:#f6f1ff;
+    --muted:#a99bc9;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Space Grotesk',sans-serif;
+    color:var(--text);
+    height:100vh;overflow:hidden;
+    background:
+      radial-gradient(1000px 600px at 20% -20%,rgba(255,61,129,.35),transparent 55%),
+      radial-gradient(900px 600px at 100% 10%,rgba(255,157,46,.28),transparent 55%),
+      radial-gradient(800px 700px at 50% 120%,rgba(139,61,255,.4),transparent 60%),
+      linear-gradient(160deg,#1a0b33 0%,#2a0f4e 55%,#180a2e 100%);
+    position:relative;
+  }
+  body::after{
+    content:"";position:fixed;inset:0;pointer-events:none;
+    background:radial-gradient(2px 2px at 20% 30%,#fff,transparent),radial-gradient(2px 2px at 60% 60%,#fff,transparent),
+      radial-gradient(1.5px 1.5px at 80% 25%,#fff,transparent),radial-gradient(1.5px 1.5px at 40% 80%,#fff,transparent),
+      radial-gradient(1px 1px at 90% 70%,#fff,transparent),radial-gradient(1px 1px at 10% 85%,#fff,transparent),
+      radial-gradient(1px 1px at 70% 90%,#fff,transparent),radial-gradient(1px 1px at 30% 15%,#fff,transparent);
+  }
+
+  .app{display:grid;grid-template-columns:250px 1fr 330px;gap:16px;height:100vh;padding:16px;position:relative;z-index:1}
+
+  .panel{
+    background:linear-gradient(180deg,rgba(255,255,255,.10),rgba(255,255,255,.04));
+    border:1px solid rgba(255,255,255,.16);
+    border-radius:22px;
+    backdrop-filter:blur(16px);
+    box-shadow:0 25px 60px -20px rgba(0,0,0,.6);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+
+  /* ---- SIDEBAR ---- */
+  .brand{display:flex;align-items:center;gap:12px;padding:20px 18px}
+  .mark{
+    width:42px;height:42px;flex:none;border-radius:50%;
+    background:conic-gradient(from 200deg,var(--purple),var(--pink),var(--orange),var(--purple));
+    display:grid;place-items:center;font-weight:700;font-size:15px;color:#fff;
+    box-shadow:0 0 24px rgba(255,61,129,.55);animation:spin 6s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .brand h1{font-size:16px;font-weight:700;letter-spacing:.5px}
+  .brand h1 em{font-style:normal;background:linear-gradient(90deg,var(--pink),var(--orange));-webkit-background-clip:text;background-clip:text;color:transparent}
+  .brand small{display:block;font-size:10px;color:var(--muted);letter-spacing:2px;text-transform:uppercase}
+
+  .nav{padding:10px 12px;display:flex;flex-direction:column;gap:4px}
+  .nav-item{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:13px;font-size:13.5px;color:var(--muted);cursor:pointer;transition:.15s}
+  .nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+  .nav-item.active{background:linear-gradient(90deg,rgba(255,61,129,.25),rgba(255,157,46,.18));color:#fff;font-weight:500;border:1px solid rgba(255,61,129,.35)}
+  .nav-item .n{width:20px;text-align:center}
+
+  .sect{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);padding:14px 14px 6px}
+  .recent{display:flex;align-items:center;gap:10px;padding:8px 14px;font-size:12.5px;color:#c9bce4;cursor:pointer;border-radius:10px}
+  .recent:hover{background:rgba(255,255,255,.06)}
+  .recent .time{margin-left:auto;font-size:10px;color:var(--muted)}
+
+  .foot{margin-top:auto;padding:16px;display:flex;align-items:center;gap:10px}
+  .av{width:34px;height:34px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--orange));display:grid;place-items:center;font-size:13px;font-weight:700}
+  .foot b{font-size:12.5px;display:block}
+  .foot small{font-size:10.5px;color:var(--muted)}
+
+  /* ---- CHAT ---- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid rgba(255,255,255,.1)}
+  .topbar h2{font-size:15.5px}
+  .topbar .sub{font-size:11px;color:var(--muted);margin-top:2px}
+  .live{display:flex;align-items:center;gap:8px;font-size:11px;color:#7ef0c6;background:rgba(126,240,198,.12);padding:6px 13px;border-radius:99px}
+  .live .p{width:8px;height:8px;border-radius:50%;background:#7ef0c6;box-shadow:0 0 10px #7ef0c6;animation:blink 1.2s infinite}
+  @keyframes blink{50%{opacity:.3}}
+
+  .messages{flex:1;overflow-y:auto;padding:22px;display:flex;flex-direction:column;gap:16px}
+  .messages::-webkit-scrollbar{width:6px}
+  .messages::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:99px}
+
+  .msg{display:flex;gap:11px;max-width:84%}
+  .msg.user{align-self:flex-end;flex-direction:row-reverse}
+  .ava{width:34px;height:34px;flex:none;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;color:#fff}
+  .msg.ai .ava{background:linear-gradient(135deg,var(--purple),var(--pink));box-shadow:0 6px 16px -6px rgba(255,61,129,.7)}
+  .msg.user .ava{background:linear-gradient(135deg,var(--orange),var(--pink))}
+  .bubble{
+    background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);
+    border-radius:4px 18px 18px 18px;padding:12px 15px;font-size:13px;line-height:1.6;
+  }
+  .msg.user .bubble{background:linear-gradient(135deg,rgba(255,61,129,.35),rgba(255,157,46,.3));border-radius:18px 4px 18px 18px;border-color:rgba(255,61,129,.3)}
+  .tag{display:inline-flex;align-items:center;gap:5px;font-size:10.5px;padding:4px 10px;border-radius:99px;background:rgba(139,61,255,.3);color:#dcc6ff;margin-top:8px;margin-right:6px}
+
+  /* ---- INPUT ---- */
+  .input-wrap{padding:14px 18px;border-top:1px solid rgba(255,255,255,.1)}
+  .input-bar{
+    display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:16px;
+    background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);
+    transition:.2s;
+  }
+  .input-bar:focus-within{border-color:rgba(255,61,129,.6);box-shadow:0 0 24px rgba(255,61,129,.25)}
+  .input-bar input{flex:1;background:none;border:none;outline:none;color:#fff;font-family:'Space Grotesk';font-size:13px}
+  .input-bar input::placeholder{color:var(--muted)}
+  .mic{border:none;background:none;color:var(--muted);font-size:15px;cursor:pointer}
+  .send{border:none;width:38px;height:38px;border-radius:12px;cursor:pointer;color:#fff;font-size:15px;background:linear-gradient(135deg,var(--purple),var(--pink),var(--orange));box-shadow:0 8px 20px -6px rgba(255,61,129,.7)}
+  .hint-row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .hint-row span{font-size:10.5px;color:var(--muted);border:1px solid rgba(255,255,255,.14);padding:4px 10px;border-radius:99px}
+
+  /* ---- CODE PANEL ---- */
+  .tabs{display:flex;gap:4px;padding:14px 14px 0}
+  .tab{font-size:11px;padding:8px 13px;border-radius:10px 10px 0 0;color:var(--muted);cursor:pointer}
+  .tab.active{background:rgba(255,255,255,.08);color:#fff;border-top:2px solid var(--pink)}
+  .editor{flex:1;background:rgba(10,4,26,.6);margin:0;padding:18px;font-family:'DM Mono',monospace;font-size:12px;line-height:1.85;overflow:auto}
+  .editor .kw{color:var(--pink)}.editor .fn{color:var(--orange)}.editor .st{color:#7ef0c6}.editor .cm{color:var(--muted)}
+  .actions{display:flex;gap:8px;padding:14px}
+  .btn{flex:1;text-align:center;font-size:11.5px;padding:9px;border-radius:11px;cursor:pointer}
+  .btn.primary{background:linear-gradient(90deg,var(--purple),var(--pink));color:#fff;font-weight:500;box-shadow:0 8px 18px -8px rgba(255,61,129,.6)}
+  .btn.ghost{border:1px solid rgba(255,255,255,.2);color:#dcc6ff}
+
+  /* ------- FENETRE APERÇU ------- */
+  .floatwin{
+    position:fixed;right:34px;bottom:30px;z-index:50;
+    width:250px;
+    background:linear-gradient(180deg,rgba(255,255,255,.12),rgba(255,255,255,.05));
+    border:1px solid rgba(255,255,255,.2);
+    border-radius:18px;
+    backdrop-filter:blur(16px);
+    box-shadow:0 25px 60px -20px rgba(0,0,0,.7),0 0 40px rgba(255,61,129,.15);
+    overflow:hidden;display:flex;flex-direction:column;
+  }
+  .floatwin.hidden{display:none}
+  .fwin-head{display:flex;align-items:center;gap:8px;padding:10px 12px;cursor:move;user-select:none;border-bottom:1px solid rgba(255,255,255,.12)}
+  .fwin-head .fdot{width:9px;height:9px;border-radius:50%}
+  .fwin-head .fdot.r{background:#ff5f6d}.fwin-head .fdot.y{background:#ffc233}.fwin-head .fdot.g{background:#2bd48c}
+  .fwin-head .ftitle{flex:1;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted)}
+  .fwin-close{border:none;background:none;color:var(--muted);font-size:13px;cursor:pointer;line-height:1}
+  .fwin-close:hover{color:var(--pink)}
+  .phone-frame{margin:12px auto;width:calc(100% - 24px);border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.15);box-shadow:0 0 30px rgba(139,61,255,.35)}
+  .phone-frame img{display:block;width:100%;height:auto}
+  .fwin-foot{padding:9px 12px;font-size:9px;letter-spacing:1px;color:var(--muted);border-top:1px solid rgba(255,255,255,.12)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="panel">
+    <div class="brand">
+      <div class="mark">Y</div>
+      <div><h1>YELMON <em>Dev X</em></h1><small>Coding Companion</small></div>
+    </div>
+    <nav class="nav">
+      <div class="nav-item"><span class="n">✦</span> Nouvelle session</div>
+      <div class="nav-item active"><span class="n">⌁</span> Tableau de bord</div>
+      <div class="nav-item"><span class="n">◆</span> Projets</div>
+      <div class="nav-item"><span class="n">◗</span> Bibliothèque</div>
+      <div class="nav-item" onclick="toggleWin()"><span class="n">▧</span> Aperçu de l'app</div>
+      <div class="nav-item"><span class="n">⚙</span> Réglages</div>
+    </nav>
+    <div class="sect">Récents</div>
+    <div class="recent">◆ valideur_mdp.py <span class="time">2 min</span></div>
+    <div class="recent">◆ scraper_prices.py <span class="time">1 h</span></div>
+    <div class="recent">◆ api_flask_server <span class="time">hier</span></div>
+    <div class="foot">
+      <div class="av">C</div>
+      <div><b>Chris</b><small>Plan Pro · 40 j restants</small></div>
+    </div>
+  </aside>
+
+  <main class="panel">
+    <div class="topbar">
+      <div><h2>Assistant de code</h2><div class="sub">YELMON Dev X · modèle DevMax-3</div></div>
+      <div class="live"><span class="p"></span> EN LIGNE · GPT ASSISTÉ</div>
+    </div>
+
+    <div class="messages" id="msgs">
+      <div class="msg ai">
+        <div class="ava">Y</div>
+        <div class="bubble">
+          Salut Chris ! 🚀 Je suis prêt. Dis-moi quel projet on attaque aujourd'hui.
+        </div>
+      </div>
+      <div class="msg user">
+        <div class="ava">C</div>
+        <div class="bubble">Génère une API Flask avec une route /api/stock qui renvoie les prix en JSON.</div>
+      </div>
+      <div class="msg ai">
+        <div class="ava">Y</div>
+        <div class="bubble">
+          C'est parti — API REST complète prête à l'emploi 👇
+          <div style="margin-top:8px">
+            <span class="tag">🔥 Flask</span>
+            <span class="tag">📦 JSON</span>
+            <span class="tag">🧪 + tests inclus</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-wrap">
+      <div class="input-bar">
+        <input placeholder="Demandez n'importe quoi : code, debug, refactor…" id="inp">
+        <button class="mic">🎙</button>
+        <button class="send" id="send">➤</button>
+      </div>
+      <div class="hint-row"><span>/api</span><span>/debug</span><span>/refactor</span><span>/explain</span><span>⌘K palette</span></div>
+    </div>
+  </main>
+
+  <aside class="panel">
+    <div class="tabs">
+      <div class="tab active">app.py</div>
+      <div class="tab">tests</div>
+    </div>
+    <div class="editor" id="editor"></div>
+    <div class="actions">
+      <div class="btn primary">Exécuter</div>
+      <div class="btn ghost">Copier</div>
+    </div>
+  </aside>
+</div>
+
+<!-- ===== FENETRE APERÇU (image de l'app) ===== -->
+<div class="floatwin" id="floatwin">
+  <div class="fwin-head" id="fwinHead">
+    <span class="fdot r"></span><span class="fdot y"></span><span class="fdot g"></span>
+    <span class="ftitle">Aperçu · App</span>
+    <button class="fwin-close" onclick="toggleWin()">✕</button>
+  </div>
+  <div class="phone-frame">
+    <img src="app-preview.png" alt="Aperçu de l'app">
+  </div>
+  <div class="fwin-foot">YELMON Dev X · nouvelle fenêtre intégrée</div>
+</div>
+
+<script>
+  const lines = [
+    '<span class="cm"># app.py — API stock</span>',
+    '<span class="kw">from</span> flask <span class="kw">import</span> Flask, jsonify',
+    '',
+    'app = Flask(__name__)',
+    '',
+    '<span class="kw">@app</span>.<span class="fn">route</span>(<span class="st">"/api/stock"</span>)',
+    '<span class="kw">def</span> <span class="fn">stock</span>():',
+    '    prix = {"AAPL": <span class="st">192.4</span>, "MSFT": <span class="st">428.9</span>}',
+    '    <span class="kw">return</span> jsonify(prix)',
+    '',
+    '<span class="kw">if</span> __name__ == <span class="st">"__main__"</span>:',
+    '    app.<span class="fn">run</span>(debug=True)'
+  ];
+  document.getElementById('editor').innerHTML = lines.map((l,i)=>('<span style="color:#5a4a80;user-select:none">'+(i+1)+'</span>  '+l)).join('<br>');
+
+  const inp = document.getElementById('inp');
+  const send = document.getElementById('send');
+  const msgs = document.getElementById('msgs');
+  function add(t){
+    const d = document.createElement('div'); d.className='msg user';
+    d.innerHTML = '<div class="ava">C</div><div class="bubble"></div>';
+    d.querySelector('.bubble').textContent = t; msgs.appendChild(d);
+    setTimeout(()=>{
+      const a = document.createElement('div'); a.className='msg ai';
+      a.innerHTML = '<div class="ava">Y</div><div class="bubble">Bien reçu ✨ je génère la solution…</div>';
+      msgs.appendChild(a); msgs.scrollTop = msgs.scrollHeight;
+    },500);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+  send.onclick = ()=>{ const t=inp.value.trim(); if(t){add(t);inp.value='';} };
+  inp.addEventListener('keydown', e=>{ if(e.key==='Enter') send.click(); });
+
+  const fwin = document.getElementById('floatwin');
+  function toggleWin(){ fwin.classList.toggle('hidden'); }
+  (function dragWin(){
+    const head = document.getElementById('fwinHead');
+    let ox, oy, dragging = false;
+    head.addEventListener('mousedown', e => {
+      dragging = true; ox = e.clientX - fwin.offsetLeft; oy = e.clientY - fwin.offsetTop;
+      document.body.style.cursor = 'move';
+    });
+    document.addEventListener('mousemove', e => {
+      if(!dragging) return;
+      fwin.style.left = (e.clientX - ox) + 'px';
+      fwin.style.top  = (e.clientY - oy) + 'px';
+      fwin.style.right = 'auto'; fwin.style.bottom = 'auto';
+    });
+    document.addEventListener('mouseup', () => { dragging = false; document.body.style.cursor = ''; });
+  })();
+</script>
+</body>
+</html>

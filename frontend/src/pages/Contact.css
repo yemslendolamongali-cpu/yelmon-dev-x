@@ -1,0 +1,333 @@
+/* Contact YELMON Dev X */
+
+.contact-page {
+    min-height: 100vh;
+    background: var(--bg-gradient);
+    padding: 24px;
+    font-family: 'Space Grotesk', sans-serif;
+    color: var(--text-primary);
+}
+
+.contact-container {
+    max-width: 960px;
+    margin: 0 auto;
+}
+
+.contact-back {
+    background: none;
+    border: 1px solid var(--panel-border);
+    color: var(--text-secondary);
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 12.5px;
+    font-family: 'Space Grotesk', sans-serif;
+    margin-bottom: 24px;
+    transition: 0.2s;
+}
+
+.contact-back:hover {
+    background: var(--nav-hover-bg);
+    color: var(--text-primary);
+}
+
+.contact-header {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.contact-header-icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 18px;
+    border-radius: 18px;
+    background: var(--gradient-brand);
+    display: grid;
+    place-items: center;
+    font-size: 28px;
+    box-shadow: 0 8px 30px var(--accent-pink);
+}
+
+.contact-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.contact-subtitle {
+    color: var(--text-muted);
+    font-size: 13.5px;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+/* Grid */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 20px;
+    align-items: start;
+}
+
+/* Form Card */
+.contact-form-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 18px;
+    padding: 28px;
+    backdrop-filter: var(--panel-blur);
+}
+
+.contact-form-card h2 {
+    font-size: 17px;
+    margin-bottom: 20px;
+}
+
+.field {
+    margin-bottom: 16px;
+}
+
+.field label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+}
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+    padding: 10px 14px;
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    background: var(--input-bg);
+    color: var(--text-primary);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    outline: none;
+    transition: 0.2s;
+    box-sizing: border-box;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+    border-color: var(--accent-pink);
+    box-shadow: 0 0 0 3px rgba(236, 72, 153, 0.15);
+}
+
+.field input::placeholder,
+.field textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.field select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+}
+
+.field textarea {
+    resize: vertical;
+    min-height: 100px;
+}
+
+.contact-error {
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 12.5px;
+    margin-bottom: 16px;
+}
+
+.contact-submit {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 12px;
+    background: var(--gradient-brand);
+    color: #fff;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13.5px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    box-shadow: var(--btn-primary-shadow);
+}
+
+.contact-submit:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px -4px var(--accent-pink);
+}
+
+.contact-submit:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Success */
+.contact-success {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.success-icon {
+    width: 60px;
+    height: 60px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: rgba(34, 197, 94, 0.15);
+    border: 2px solid #22c55e;
+    display: grid;
+    place-items: center;
+    font-size: 28px;
+    color: #22c55e;
+}
+
+.contact-success h3 {
+    font-size: 18px;
+    margin-bottom: 8px;
+}
+
+.contact-success p {
+    color: var(--text-muted);
+    font-size: 13px;
+    margin-bottom: 20px;
+}
+
+.success-btn {
+    padding: 10px 24px;
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12.5px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.success-btn:hover {
+    background: var(--nav-hover-bg);
+    color: var(--text-primary);
+}
+
+/* Info Card */
+.contact-info-card {
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 18px;
+    padding: 28px;
+    backdrop-filter: var(--panel-blur);
+}
+
+.contact-info-card h2 {
+    font-size: 17px;
+    margin-bottom: 20px;
+}
+
+.contact-info-card h3 {
+    font-size: 14px;
+    margin: 0 0 12px;
+    color: var(--text-primary);
+}
+
+.info-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 12px 0;
+}
+
+.info-icon {
+    font-size: 20px;
+    flex-shrink: 0;
+    width: 36px;
+    height: 36px;
+    background: var(--tag-bg);
+    border-radius: 10px;
+    display: grid;
+    place-items: center;
+}
+
+.info-label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 2px;
+    letter-spacing: 0.3px;
+}
+
+.info-value {
+    font-size: 13px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.info-value.link {
+    color: var(--accent-pink);
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.info-value.link:hover {
+    text-decoration: underline;
+}
+
+.info-divider {
+    height: 1px;
+    background: var(--divider);
+    margin: 18px 0;
+}
+
+.info-links {
+    display: flex;
+    gap: 10px;
+}
+
+.info-link {
+    flex: 1;
+    text-align: center;
+    padding: 10px 16px;
+    border: 1px solid var(--panel-border);
+    border-radius: 10px;
+    background: transparent;
+    color: var(--text-secondary);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12.5px;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.info-link:hover {
+    background: var(--nav-hover-bg);
+    color: var(--text-primary);
+    border-color: var(--accent-pink);
+}
+
+.info-note {
+    background: var(--tag-bg);
+    border-radius: 10px;
+    padding: 14px;
+}
+
+.info-note p {
+    margin: 0;
+    font-size: 11.5px;
+    color: var(--text-muted);
+    line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+}

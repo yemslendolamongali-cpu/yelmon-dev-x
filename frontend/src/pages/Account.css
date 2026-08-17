@@ -1,0 +1,283 @@
+/* Account Page - Theme-aware */
+
+.account-page {
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 40px 24px;
+}
+
+.account-container {
+    max-width: 600px;
+    width: 100%;
+    position: relative;
+    z-index: 1;
+}
+
+.account-back {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-secondary);
+    padding: 10px 20px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    transition: all 0.2s;
+    margin-bottom: 30px;
+}
+
+.account-back:hover {
+    background: var(--nav-hover-bg);
+    color: var(--text-primary);
+}
+
+.account-header {
+    text-align: center;
+    margin-bottom: 36px;
+}
+
+.account-avatar {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 16px;
+    border-radius: 50%;
+    background: var(--gradient-brand);
+    display: grid;
+    place-items: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: 32px;
+    color: #fff;
+    box-shadow: 0 0 30px var(--accent-pink);
+}
+
+.account-header h1 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+}
+
+.account-username {
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+.account-details {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.account-detail-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 14px;
+    background: var(--input-bg);
+    border-radius: 10px;
+    border: 1px solid var(--panel-border);
+}
+
+.detail-label {
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.detail-value {
+    font-size: 13px;
+    color: var(--text-primary);
+}
+
+.role-badge {
+    background: var(--gradient-brand-h);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+
+.account-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.account-card {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px;
+    background: var(--panel-bg);
+    border: 1px solid var(--panel-border);
+    border-radius: 18px;
+    backdrop-filter: var(--panel-blur);
+    box-shadow: var(--panel-shadow);
+}
+
+.account-card.danger {
+    border-color: var(--error-border);
+}
+
+.account-card-icon {
+    font-size: 28px;
+    flex-shrink: 0;
+}
+
+.account-card-content {
+    flex: 1;
+}
+
+.account-card-content h3 {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 4px;
+}
+
+.account-card-content p {
+    color: var(--text-secondary);
+    font-size: 12px;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.account-card.danger .account-card-content p strong {
+    color: var(--accent-pink);
+}
+
+.account-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 12px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.account-btn.switch {
+    background: var(--gradient-brand);
+    color: #fff;
+    box-shadow: 0 6px 16px -4px var(--accent-pink);
+}
+
+.account-btn.switch:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px -4px var(--accent-pink);
+}
+
+.account-btn.logout {
+    background: var(--input-bg);
+    border: 1px solid var(--btn-ghost-border);
+    color: var(--btn-ghost-text);
+}
+
+.account-btn.logout:hover {
+    background: var(--nav-hover-bg);
+    color: var(--text-primary);
+}
+
+.account-btn.delete {
+    background: var(--error-bg);
+    border: 1px solid var(--error-border);
+    color: var(--error-text);
+}
+
+.account-btn.delete:hover {
+    background: var(--error-border);
+}
+
+.delete-confirm {
+    flex-basis: 100%;
+    margin-top: 12px;
+}
+
+.delete-confirm p {
+    color: var(--text-secondary);
+    font-size: 12px;
+    margin: 0 0 8px;
+}
+
+.delete-confirm p strong {
+    color: var(--accent-pink);
+}
+
+.delete-confirm input {
+    width: 100%;
+    padding: 10px 14px;
+    background: var(--error-bg);
+    border: 1px solid var(--error-border);
+    border-radius: 10px;
+    color: var(--error-text);
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 13px;
+    outline: none;
+    box-sizing: border-box;
+    margin-bottom: 8px;
+}
+
+.delete-confirm input:focus {
+    border-color: var(--accent-pink);
+    box-shadow: 0 0 16px rgba(255,61,129,.2);
+}
+
+.account-error {
+    color: var(--error-text);
+    font-size: 11px;
+    margin-bottom: 8px;
+}
+
+.delete-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.account-btn.cancel {
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    color: var(--text-secondary);
+}
+
+.account-btn.cancel:hover {
+    background: var(--nav-hover-bg);
+    color: var(--text-primary);
+}
+
+.account-btn.confirm-delete {
+    background: var(--accent-pink);
+    color: #fff;
+    box-shadow: 0 6px 16px -4px var(--accent-pink);
+}
+
+.account-btn.confirm-delete:hover:not(:disabled) {
+    filter: brightness(1.1);
+    transform: translateY(-1px);
+}
+
+.account-btn.confirm-delete:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.account-footer {
+    margin-top: 40px;
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+}
+
+.account-brand {
+    font-weight: 700;
+    background: var(--gradient-brand-h);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}

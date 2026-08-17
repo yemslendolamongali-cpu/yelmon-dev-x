@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: yelmon-dev-x
+    runtime: docker
+    plan: free
+    envVars:
+      - key: YELMON_SECRET
+        generateValue: true
+      - key: PYTHON_VERSION
+        value: "3.11.0"
+    healthCheckPath: /api/app/info
+    autoDeploy: true

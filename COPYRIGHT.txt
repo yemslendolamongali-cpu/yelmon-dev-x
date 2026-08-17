@@ -1,0 +1,83 @@
+================================================================================
+                        YELMON DEV X — DROITS D'AUTEUR
+================================================================================
+
+© 2026 Yems junior lendola — Tous droits réservés.
+
+Ce logiciel et l'ensemble de ses composants (code source, scripts, binaires,
+modèles, données, interfaces graphiques, assets, documentation) sont la
+propriété exclusive de Yems junior lendola.
+
+--------------------------------------------------------------------------------
+                        INTERDICTIONS FORMELLES
+--------------------------------------------------------------------------------
+
+Il est strictement interdit, sans autorisation écrite préalable du titulaire
+des droits, de :
+
+  1. Copier, reproduire, dupliquer ou cloner tout ou partie du code source,
+     des scripts Python, JavaScript, TypeScript, CSS ou de tout autre langage
+     utilisé dans YELMON Dev X.
+
+  2. Extraire, décompiler, désassembler ou reverse-engineer les binaires,
+     les exécutables, les fichiers .exe, .js compilés, .wasm ou tout autre
+     artefact compilé.
+
+  3. Télécharger, copier, redistribuer, vendre, louer, sous-licencier ou
+     mettre à disposition du public les scripts, modèles ou données
+     contenus dans ce logiciel.
+
+  4. Modifier, adapter, traduire ou créer des œuvres dérivées à partir
+     du code de YELMON Dev X à des fins de concurrence, de clonage ou
+     de redistribution non autorisée.
+
+  5. Exporter, extraire ou migrer les modèles de génération de code,
+     les templates, les bases de données, les fichiers JSON de
+     configuration ou les données d'entraînement.
+
+  6. Utiliser les composants de YELMON Dev X pour construire un
+     concurrent direct ou un clone du logiciel.
+
+--------------------------------------------------------------------------------
+                        AUTORISATIONS
+--------------------------------------------------------------------------------
+
+L'utilisateur final est autorisé à :
+
+  - Utiliser le logiciel à des fins personnelles ou professionnelles
+    dans le cadre d'une licence valide.
+  - Générer du code avec l'assistant IA pour ses propres projets.
+  - Stocker et exécuter le code généré pour son usage personnel.
+
+--------------------------------------------------------------------------------
+                        MARQUES ET IDENTITÉ VISUELLE
+--------------------------------------------------------------------------------
+
+  - « YELMON Dev X » est une marque distinctive de Yems junior lendola.
+  - Le logo, les noms « YELMON », « YELMON Dev X », « DevMax-3 »,
+    « Neural Co-Pilot » et « Coding Companion » sont des marks
+    propriétaires.
+  - L'identité visuelle (design Cyber Sunrise, effets néon, grille
+    holographique) est protégée par le droit d'auteur.
+
+--------------------------------------------------------------------------------
+                        SANCTIONS
+--------------------------------------------------------------------------------
+
+Toute violation de ces droits d'auteur peut entraîner :
+
+  - Des poursuites civiles et des dommages-intérêts.
+  - Des poursuites pénales conformément aux lois en vigueur.
+  - La résiliation immédiate de la licence d'utilisation.
+
+--------------------------------------------------------------------------------
+                        CONTACT
+--------------------------------------------------------------------------------
+
+Pour toute demande de licence, de redistribution ou de partenariat :
+
+  Propriétaire : Yems junior lendola
+  Application  : YELMON Dev X v1.0.0
+  Date         : 2026
+
+================================================================================

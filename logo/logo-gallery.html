@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YELMON Dev X — Logos</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;600&display=swap');
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'Inter',sans-serif;
+    min-height:100vh;
+    background:linear-gradient(160deg,#0b1026 0%,#1a0b33 60%,#2a0f4e 100%);
+    color:#fff;padding:40px 30px 60px;
+  }
+  header{text-align:center;margin-bottom:42px}
+  .badge{display:inline-block;font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#00e5ff;border:1px solid rgba(0,229,255,.4);padding:6px 16px;border-radius:99px;margin-bottom:18px}
+  h1{font-family:'Sora';font-size:34px;font-weight:800}
+  h1 em{font-style:normal;background:linear-gradient(90deg,#8b3dff,#ff3d81,#ff9d2e);-webkit-background-clip:text;background-clip:text;color:transparent}
+  p.sub{color:#a99bc9;margin-top:10px;font-size:14px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:26px;max-width:1100px;margin:0 auto}
+
+  .card{background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:22px;overflow:hidden;backdrop-filter:blur(10px);display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s}
+  .card:hover{transform:translateY(-6px);box-shadow:0 30px 60px -20px rgba(0,0,0,.7)}
+
+  .stage{height:300px;display:grid;place-items:center;background:
+    radial-gradient(400px 220px at 50% 0%,rgba(139,61,255,.22),transparent 60%),
+    radial-gradient(300px 200px at 0% 100%,rgba(0,229,255,.14),transparent 60%),
+    radial-gradient(300px 200px at 100% 100%,rgba(255,61,129,.14),transparent 60%),
+    #07091a;
+    border-bottom:1px solid rgba(255,255,255,.08)}
+  .stage svg{width:170px;height:170px;filter:drop-shadow(0 12px 24px rgba(0,0,0,.5))}
+
+  .body{padding:20px 22px 24px}
+  .num{font-size:11px;letter-spacing:2px;color:#7ef0c6;font-weight:600}
+  h2{font-family:'Sora';font-size:19px;margin:6px 0 8px}
+  .desc{font-size:13px;color:#a99bc9;line-height:1.55;margin-bottom:18px}
+  .row{display:flex;gap:10px}
+  a.btn{flex:1;text-align:center;padding:11px;border-radius:13px;text-decoration:none;font-weight:600;font-size:13px;transition:.2s}
+  a.btn.primary{background:linear-gradient(90deg,#8b3dff,#ff3d81);color:#fff;box-shadow:0 10px 24px -8px rgba(255,61,129,.6)}
+  a.btn.ghost{border:1px solid rgba(255,255,255,.25);color:#dcc6ff}
+  a.btn:hover{filter:brightness(1.15)}
+  footer{text-align:center;color:#5a4a80;font-size:12px;margin-top:46px}
+</style>
+</head>
+<body>
+<header>
+  <div class="badge">Identité visuelle</div>
+  <h1>YELMON <em>Dev X</em> — Logos</h1>
+  <p class="sub">Trois concepts de logo pour votre IA de codage. Cliquez pour télécharger en SVG.</p>
+</header>
+
+<div class="grid">
+
+  <div class="card">
+    <div class="stage"><img src="logo-1-neon-hex.svg" alt="Logo Neon Hex" style="width:170px;height:170px"></div>
+    <div class="body">
+      <div class="num">LOGO 01</div>
+      <h2>Neon Hex</h2>
+      <p class="desc">Hexagone technologique néon avec monogramme « Y » lumineux et nœuds de circuit. Futuriste, parfait pour le thème "Neon Eclipse".</p>
+      <div class="row">
+        <a class="btn primary" href="logo-1-neon-hex.svg" download>SVG</a>
+        <a class="btn ghost" href="logo-1-neon-hex.svg" target="_blank">Aperçu</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stage"><img src="logo-2-code-brackets.svg" alt="Logo Code Brackets" style="width:170px;height:170px"></div>
+    <div class="body">
+      <div class="num">LOGO 02</div>
+      <h2>Code Brackets</h2>
+      <p class="desc">Symbole « &lt; Y / &gt; » : le « Y » entre parenthèses angulaires de code, dégradé violet → rose → orange. Idéal pour le thème "Cyber Sunrise".</p>
+      <div class="row">
+        <a class="btn primary" href="logo-2-code-brackets.svg" download>SVG</a>
+        <a class="btn ghost" href="logo-2-code-brackets.svg" target="_blank">Aperçu</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="stage"><img src="logo-3-orbital.svg" alt="Logo Orbital" style="width:170px;height:170px"></div>
+    <div class="body">
+      <div class="num">LOGO 03</div>
+      <h2>Orbital</h2>
+      <p class="desc">Noyau sombre avec orbites en rotation et « Y » central dégradé violet → cyan. Moderne et cosmique, adapté au thème "Glass Aurora".</p>
+      <div class="row">
+        <a class="btn primary" href="logo-3-orbital.svg" download>SVG</a>
+        <a class="btn ghost" href="logo-3-orbital.svg" target="_blank">Aperçu</a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>YELMON Dev X · logos générés avec opencode</footer>
+</body>
+</html>

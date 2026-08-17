@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YELMON Dev X — Design 1 : Neon Eclipse</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=JetBrains+Mono:wght@400;600&display=swap');
+
+  :root{
+    --bg:#05060f;
+    --panel:rgba(10,12,28,.85);
+    --line:rgba(0,229,255,.25);
+    --cyan:#00e5ff;
+    --magenta:#ff2d95;
+    --violet:#7b2dff;
+    --text:#d9e6f5;
+    --muted:#5c6b8a;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    font-family:'JetBrains Mono',monospace;
+    background:var(--bg);
+    color:var(--text);
+    height:100vh;
+    overflow:hidden;
+    position:relative;
+  }
+
+  /* grille futuriste + glow */
+  body::before{
+    content:"";
+    position:fixed;inset:0;
+    background:
+      radial-gradient(800px 400px at 85% -10%,rgba(123,45,255,.25),transparent 60%),
+      radial-gradient(700px 420px at 10% 110%,rgba(0,229,255,.18),transparent 60%),
+      linear-gradient(rgba(0,229,255,.05) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(0,229,255,.05) 1px,transparent 1px);
+    background-size:100% 100%,100% 100%,42px 42px,42px 42px;
+    pointer-events:none;
+  }
+  body::after{
+    content:"";
+    position:fixed;inset:0;
+    background:linear-gradient(120deg,transparent 0%,rgba(0,229,255,.06) 45%,transparent 55%);
+    animation:scan 7s linear infinite;
+    pointer-events:none;
+  }
+  @keyframes scan{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+
+  .app{display:grid;grid-template-columns:240px 1fr 320px;gap:14px;height:100vh;padding:14px;position:relative;z-index:1}
+
+  /* ------- PANNEAUX ------- */
+  .panel{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:18px;
+    backdrop-filter:blur(14px);
+    box-shadow:0 0 30px rgba(0,229,255,.08), inset 0 0 40px rgba(0,229,255,.03);
+    overflow:hidden;
+    display:flex;flex-direction:column;
+  }
+
+  /* ------- SIDEBAR ------- */
+  .logo{
+    display:flex;align-items:center;gap:10px;
+    padding:18px 16px;
+    border-bottom:1px solid var(--line);
+  }
+  .logo-badge{
+    width:38px;height:38px;flex:none;
+    display:grid;place-items:center;
+    font-family:'Orbitron',monospace;font-weight:900;font-size:13px;color:#fff;
+    background:conic-gradient(from 210deg,var(--cyan),var(--magenta),var(--violet),var(--cyan));
+    border-radius:10px;
+    box-shadow:0 0 18px rgba(255,45,149,.5),0 0 30px rgba(0,229,255,.3);
+    transform:rotate(-6deg);
+  }
+  .logo h1{font-family:'Orbitron',monospace;font-size:14px;letter-spacing:2px;color:#fff}
+  .logo small{display:block;font-size:9px;letter-spacing:3px;color:var(--muted);font-family:'JetBrains Mono'}
+
+  .nav{padding:12px 10px;display:flex;flex-direction:column;gap:4px}
+  .nav-item{
+    display:flex;align-items:center;gap:10px;
+    padding:10px 12px;border-radius:10px;
+    color:var(--muted);font-size:12.5px;cursor:pointer;
+    border:1px solid transparent;transition:.2s;
+  }
+  .nav-item:hover{color:var(--text);background:rgba(0,229,255,.07)}
+  .nav-item.active{
+    color:#fff;background:linear-gradient(90deg,rgba(0,229,255,.18),rgba(255,45,149,.10));
+    border-color:var(--line);box-shadow:inset 0 0 20px rgba(0,229,255,.06);
+  }
+  .nav-item .ico{width:16px;text-align:center}
+
+  .sidebar-footer{margin-top:auto;padding:14px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+  .status{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+  .dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 10px var(--cyan);animation:pulse 1.6s infinite}
+  @keyframes pulse{50%{opacity:.35}}
+
+  /* ------- CHAT ------- */
+  .chat-head{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:14px 18px;border-bottom:1px solid var(--line);
+  }
+  .chat-head .title{font-family:'Orbitron',monospace;font-size:13px;letter-spacing:2px;color:#fff}
+  .chat-head .sub{font-size:10px;color:var(--muted);letter-spacing:1px;margin-top:3px}
+  .pill{
+    font-size:10px;letter-spacing:1px;padding:5px 12px;border-radius:99px;
+    border:1px solid var(--line);color:var(--cyan);
+  }
+
+  .messages{flex:1;overflow-y:auto;padding:20px;display:flex;flex-direction:column;gap:18px}
+  .messages::-webkit-scrollbar{width:6px}
+  .messages::-webkit-scrollbar-thumb{background:rgba(0,229,255,.25);border-radius:3px}
+
+  .msg{display:flex;gap:12px;max-width:86%}
+  .msg.user{align-self:flex-end;flex-direction:row-reverse}
+  .avatar{
+    width:34px;height:34px;flex:none;border-radius:10px;
+    display:grid;place-items:center;font-family:'Orbitron';font-weight:700;font-size:12px;
+  }
+  .msg.ai .avatar{background:linear-gradient(135deg,var(--cyan),var(--violet));color:#fff;box-shadow:0 0 14px rgba(0,229,255,.4)}
+  .msg.user .avatar{background:linear-gradient(135deg,var(--magenta),#7b2dff);color:#fff}
+  .bubble{
+    background:rgba(255,255,255,.035);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:4px 16px 16px 16px;
+    padding:12px 14px;font-size:12.5px;line-height:1.6;
+  }
+  .msg.user .bubble{background:linear-gradient(135deg,rgba(255,45,149,.18),rgba(123,45,255,.14));border-radius:16px 4px 16px 16px;border-color:rgba(255,45,149,.25)}
+  .codeblock{
+    background:#03040c;border:1px solid rgba(0,229,255,.2);border-radius:10px;
+    padding:12px;font-family:'JetBrains Mono',monospace;font-size:11.5px;margin-top:8px;color:#7ef2ff;
+  }
+  .codeblock .k{color:var(--magenta)}.codeblock .f{color:#ffe27a}.codeblock .s{color:#7ae0a3}.codeblock .c{color:var(--muted)}
+
+  /* ------- INPUT ------- */
+  .input-wrap{padding:14px 16px;border-top:1px solid var(--line)}
+  .input-bar{
+    display:flex;align-items:center;gap:10px;
+    background:#03040c;border:1px solid var(--line);border-radius:14px;padding:8px 10px;
+    transition:.2s;
+  }
+  .input-bar:focus-within{box-shadow:0 0 20px rgba(0,229,255,.2)}
+  .input-bar input{
+    flex:1;background:none;border:none;outline:none;color:var(--text);
+    font-family:'JetBrains Mono',monospace;font-size:12.5px;
+  }
+  .send{
+    width:34px;height:34px;flex:none;border:none;border-radius:10px;cursor:pointer;
+    background:linear-gradient(135deg,var(--cyan),var(--magenta));color:#000;font-size:15px;
+    box-shadow:0 0 16px rgba(255,45,149,.45);
+  }
+  .hint{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .hint span{font-size:10px;color:var(--muted);border:1px solid rgba(255,255,255,.08);padding:4px 10px;border-radius:99px}
+
+  /* ------- PANEL CODE ------- */
+  .code-tabs{display:flex;gap:2px;padding:10px 12px 0;border-bottom:1px solid var(--line)}
+  .tab{font-size:11px;padding:7px 12px;border-radius:8px 8px 0 0;color:var(--muted);cursor:pointer}
+  .tab.active{color:#fff;background:#03040c;border:1px solid var(--line);border-bottom:none;box-shadow:inset 0 2px 10px rgba(0,229,255,.15)}
+  .editor{flex:1;background:#03040c;padding:16px;font-size:11.5px;line-height:1.7;overflow:auto}
+  .editor::-webkit-scrollbar{width:6px}
+  .ln{color:rgba(255,255,255,.15);user-select:none}
+  .meta{padding:12px 16px;border-top:1px solid var(--line);font-size:10px;color:var(--muted)}
+  .bar{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--cyan),var(--magenta));margin-top:8px}
+
+  /* ------- FENETRE APERÇU ------- */
+  .floatwin{
+    position:fixed;right:34px;bottom:30px;z-index:50;
+    width:250px;
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:16px;
+    box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 40px rgba(0,229,255,.12);
+    backdrop-filter:blur(14px);
+    overflow:hidden;
+    display:flex;flex-direction:column;
+  }
+  .floatwin.hidden{display:none}
+  .fwin-head{
+    display:flex;align-items:center;gap:8px;
+    padding:9px 12px;cursor:move;user-select:none;
+    border-bottom:1px solid var(--line);
+    background:rgba(0,229,255,.05);
+  }
+  .fwin-head .fdot{width:9px;height:9px;border-radius:50%}
+  .fwin-head .fdot.r{background:#ff4d6d}.fwin-head .fdot.y{background:#ffc233}.fwin-head .fdot.g{background:#2bff9a}
+  .fwin-head .ftitle{flex:1;font-size:10px;letter-spacing:2px;color:var(--muted)}
+  .fwin-close{
+    border:none;background:none;color:var(--muted);font-size:13px;cursor:pointer;line-height:1;
+  }
+  .fwin-close:hover{color:var(--magenta)}
+  .phone-frame{
+    margin:12px auto;width:calc(100% - 24px);
+    border-radius:14px;overflow:hidden;
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow:0 0 24px rgba(123,45,255,.25);
+  }
+  .phone-frame img{display:block;width:100%;height:auto}
+  .fwin-foot{padding:9px 12px;font-size:9px;letter-spacing:1px;color:var(--muted);border-top:1px solid var(--line)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="panel">
+    <div class="logo">
+      <div class="logo-badge">Y</div>
+      <div><h1>YELMON DEV X</h1><small>NEURAL CO-PILOT</small></div>
+    </div>
+    <nav class="nav">
+      <div class="nav-item active"><span class="ico">◈</span> Nouvelle session</div>
+      <div class="nav-item"><span class="ico">⌘</span> Chats récents</div>
+      <div class="nav-item"><span class="ico">▦</span> Projets</div>
+      <div class="nav-item"><span class="ico">◉</span> Modèles IA</div>
+      <div class="nav-item" onclick="toggleWin()"><span class="ico">▢</span> Aperçu de l'app</div>
+      <div class="nav-item"><span class="ico">⚙</span> Paramètres</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="status"><span class="dot"></span> YELMON Core 4.2 en ligne</div>
+      <div>Neurones : 4096 · Latence 12ms</div>
+    </div>
+  </aside>
+
+  <!-- ===== CHAT ===== -->
+  <main class="panel">
+    <div class="chat-head">
+      <div>
+        <div class="title">SESSION — NEON.GEN</div>
+        <div class="sub">projet / app-desktop · niveau: expert</div>
+      </div>
+      <div class="pill">● SYNCHRONISÉ</div>
+    </div>
+
+    <div class="messages" id="msgs">
+      <div class="msg ai">
+        <div class="avatar">Y</div>
+        <div class="bubble">
+          Initialisation du noyau YELMON… <br>
+          Je suis prêt à coder. Qu'allons-nous construire aujourd'hui, commandant ?
+        </div>
+      </div>
+      <div class="msg user">
+        <div class="avatar">U</div>
+        <div class="bubble">Crée une fonction qui valide un mot de passe en Python (8+ caractères, chiffre, majuscule).</div>
+      </div>
+      <div class="msg ai">
+        <div class="avatar">Y</div>
+        <div class="bubble">
+          Compris. Génération du module de validation :
+          <div class="codeblock">
+            <span class="k">import</span> re<br>
+            <br>
+            <span class="k">def</span> <span class="f">valider_mdp</span>(mdp):<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;ok = (<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">len</span>(mdp) &gt;= <span class="s">8</span><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">and</span> <span class="k">any</span>(c.<span class="f">isdigit</span>() <span class="k">for</span> c <span class="k">in</span> mdp)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="k">and</span> <span class="k">any</span>(c.<span class="f">isupper</span>() <span class="k">for</span> c <span class="k">in</span> mdp)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;)<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;<span class="k">return</span> ok<br>
+            <br>
+            <span class="c"># test</span><br>
+            <span class="f">print</span>(<span class="s">valider_mdp("Yelmon2026")</span>)  <span class="c"># True</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="input-wrap">
+      <div class="input-bar">
+        <input placeholder="Décrivez votre mission de code…" id="inp">
+        <button class="send" id="send">➤</button>
+      </div>
+      <div class="hint"><span>Ctrl+K · commande</span><span>@ pour fichiers</span><span>/ python, js, rust…</span></div>
+    </div>
+  </main>
+
+  <!-- ===== CODE PREVIEW ===== -->
+  <aside class="panel">
+    <div class="code-tabs">
+      <div class="tab active">validateur.py</div>
+      <div class="tab">tests.py</div>
+    </div>
+    <div class="editor" id="editor"></div>
+    <div class="meta">
+      ANALYSE · PRET
+      <div class="bar"></div>
+      <div style="margin-top:8px">7 lignes · 0 erreur · coverage 100%</div>
+    </div>
+  </aside>
+</div>
+
+<!-- ===== FENETRE APERÇU (image de l'app) ===== -->
+<div class="floatwin" id="floatwin">
+  <div class="fwin-head" id="fwinHead">
+    <span class="fdot r"></span><span class="fdot y"></span><span class="fdot g"></span>
+    <span class="ftitle">APERÇU · APP MOBILE</span>
+    <button class="fwin-close" onclick="toggleWin()">✕</button>
+  </div>
+  <div class="phone-frame">
+    <img src="app-preview.png" alt="Aperçu de l'app">
+  </div>
+  <div class="fwin-foot">YELMON Dev X · intégration d'une nouvelle fenêtre</div>
+</div>
+
+<script>
+  const code = [
+    '<span class="ln"> 1</span> <span class="k">import</span> re',
+    '<span class="ln"> 2</span> ',
+    '<span class="ln"> 3</span> <span class="k">def</span> <span class="f">valider_mdp</span>(mdp):',
+    '<span class="ln"> 4</span>     ok = <span class="k">len</span>(mdp) &gt;= <span class="s">8</span> <span class="k">and</span> <span class="k">any</span>(c.<span class="f">isdigit</span>() <span class="k">for</span> c <span class="k">in</span> mdp)',
+    '<span class="ln"> 5</span>     ok = ok <span class="k">and</span> <span class="k">any</span>(c.<span class="f">isupper</span>() <span class="k">for</span> c <span class="k">in</span> mdp)',
+    '<span class="ln"> 6</span>     <span class="k">return</span> ok',
+    '<span class="ln"> 7</span> ',
+    '<span class="ln"> 8</span> <span class="c"># v1.0 — généré par YELMON Dev X</span>'
+  ];
+  document.getElementById('editor').innerHTML = code.join('<br>');
+
+  const inp = document.getElementById('inp');
+  const send = document.getElementById('send');
+  const msgs = document.getElementById('msgs');
+  function addMessage(text){
+    const d = document.createElement('div');
+    d.className = 'msg user';
+    d.innerHTML = '<div class="avatar">U</div><div class="bubble"></div>';
+    d.querySelector('.bubble').textContent = text;
+    msgs.appendChild(d);
+    setTimeout(() => {
+      const a = document.createElement('div');
+      a.className = 'msg ai';
+      a.innerHTML = '<div class="avatar">Y</div><div class="bubble">Mission reçue. Analyse en cours… 🔮</div>';
+      msgs.appendChild(a);
+      msgs.scrollTop = msgs.scrollHeight;
+    }, 500);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+  function sendMsg(){ const t = inp.value.trim(); if(t){ addMessage(t); inp.value=''; } }
+  send.onclick = sendMsg;
+  inp.addEventListener('keydown', e => { if(e.key === 'Enter') sendMsg(); });
+
+  const fwin = document.getElementById('floatwin');
+  function toggleWin(){ fwin.classList.toggle('hidden'); }
+  (function dragWin(){
+    const head = document.getElementById('fwinHead');
+    let ox, oy, dragging = false;
+    head.addEventListener('mousedown', e => {
+      dragging = true; ox = e.clientX - fwin.offsetLeft; oy = e.clientY - fwin.offsetTop;
+      document.body.style.cursor = 'move';
+    });
+    document.addEventListener('mousemove', e => {
+      if(!dragging) return;
+      fwin.style.left = (e.clientX - ox) + 'px';
+      fwin.style.top  = (e.clientY - oy) + 'px';
+      fwin.style.right = 'auto'; fwin.style.bottom = 'auto';
+    });
+    document.addEventListener('mouseup', () => { dragging = false; document.body.style.cursor = ''; });
+  })();
+</script>
+</body>
+</html>
