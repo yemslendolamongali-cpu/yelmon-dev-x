@@ -16,9 +16,8 @@ COPY requirements-cloud.txt .
 RUN pip install --no-cache-dir -r requirements-cloud.txt
 
 COPY backend/ backend/
-COPY data/ data/
 COPY assets/ assets/
-RUN mkdir -p logs
+RUN mkdir -p logs data
 
 COPY --from=frontend-build /app/frontend/build/ frontend/build/
 
