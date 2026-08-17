@@ -1968,3 +1968,347 @@ int main() {
 _CPP_KEYWORD_MAP = [
     (["fibonacci"], "fibonacci"),
 ]
+
+
+# ============================================================================
+# HTML/CSS TEMPLATES
+# ============================================================================
+
+HTML_TEMPLATES = {}
+
+
+def _html(name):
+    def decorator(fn):
+        HTML_TEMPLATES[name] = fn
+        return fn
+    return decorator
+
+
+@_html("landing_page")
+def _html_landing(p):
+    return '''\
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YELMON Landing Page</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f23; color: #e0e0e0; }
+        nav { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; background: rgba(15,15,35,0.95); position: sticky; top: 0; z-index: 100; backdrop-filter: blur(10px); }
+        nav .logo { font-size: 1.5rem; font-weight: 800; background: linear-gradient(135deg, #ff6b6b, #ffa500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        nav ul { list-style: none; display: flex; gap: 24px; }
+        nav a { color: #aaa; text-decoration: none; transition: color 0.3s; }
+        nav a:hover { color: #ff6b6b; }
+        .hero { min-height: 80vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 20px; background: radial-gradient(ellipse at 50% 0%, rgba(255,107,107,0.15) 0%, transparent 60%); }
+        .hero h1 { font-size: 3.5rem; font-weight: 800; margin-bottom: 16px; background: linear-gradient(135deg, #ff6b6b, #ffa500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .hero p { font-size: 1.25rem; color: #888; max-width: 600px; margin-bottom: 32px; }
+        .btn { display: inline-block; padding: 14px 32px; border-radius: 8px; font-size: 1rem; font-weight: 600; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, #ff6b6b, #ffa500); color: #fff; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255,107,107,0.3); }
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; padding: 80px 40px; max-width: 1100px; margin: 0 auto; }
+        .feature-card { background: #1a1a3e; border-radius: 16px; padding: 32px; border: 1px solid rgba(255,107,107,0.1); transition: transform 0.3s, border-color 0.3s; }
+        .feature-card:hover { transform: translateY(-4px); border-color: rgba(255,107,107,0.3); }
+        .feature-card h3 { font-size: 1.3rem; margin-bottom: 12px; color: #ff6b6b; }
+        .feature-card p { color: #888; line-height: 1.6; }
+        .cta { text-align: center; padding: 80px 20px; background: radial-gradient(ellipse at 50% 100%, rgba(255,165,0,0.1) 0%, transparent 60%); }
+        .cta h2 { font-size: 2.5rem; margin-bottom: 16px; }
+        .cta p { color: #888; margin-bottom: 32px; font-size: 1.1rem; }
+        footer { text-align: center; padding: 40px; color: #555; font-size: 0.9rem; border-top: 1px solid #1a1a3e; }
+        @media (max-width: 768px) { nav ul { display: none; } .hero h1 { font-size: 2rem; } .features { padding: 40px 20px; } }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">YELMON</div>
+        <ul>
+            <li><a href="#features">Fonctionnalités</a></li>
+            <li><a href="#pricing">Tarifs</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+    <section class="hero">
+        <h1>Créez du code plus vite</h1>
+        <p>YELMON Dev X transforme vos idées en code fonctionnel en quelques secondes. IA de dernière génération, multi-langages.</p>
+        <a href="#features" class="btn btn-primary">Découvrir</a>
+    </section>
+    <section class="features" id="features">
+        <div class="feature-card">
+            <h3>Multi-langages</h3>
+            <p>Python, JavaScript, Java, Go, Rust, C++, HTML/CSS — générez du code dans la langue de votre choix.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Exécution instantanée</h3>
+            <p>Testez votre code directement dans l'éditeur. Résultats en temps réel, zéro configuration.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Intelligente</h3>
+            <p>L'IA analyse votre demande, détecte le framework optimal et produit du code propre et fonctionnel.</p>
+        </div>
+    </section>
+    <section class="cta" id="pricing">
+        <h2>Prêt à coder ?</h2>
+        <p>Rejoignez des milliers de développeurs qui font confiance à YELMON.</p>
+        <a href="#" class="btn btn-primary">Commencer gratuitement</a>
+    </section>
+    <footer id="contact">
+        <p>&copy; 2026 Yems junior lendola — All Rights Reserved.</p>
+    </footer>
+</body>
+</html>
+'''
+
+
+@_html("portfolio")
+def _html_portfolio(p):
+    return '''\
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio — YELMON</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f23; color: #e0e0e0; }
+        header { min-height: 60vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 60px 20px; }
+        header h1 { font-size: 3rem; font-weight: 800; margin-bottom: 12px; background: linear-gradient(135deg, #ff6b6b, #ffa500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        header p { color: #888; font-size: 1.2rem; max-width: 500px; }
+        .projects { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; padding: 40px; max-width: 1100px; margin: 0 auto; }
+        .project { background: #1a1a3e; border-radius: 16px; overflow: hidden; border: 1px solid rgba(255,107,107,0.1); transition: transform 0.3s; }
+        .project:hover { transform: translateY(-4px); }
+        .project-img { height: 180px; background: linear-gradient(135deg, #1a1a3e, #2a1a4e); display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+        .project-body { padding: 20px; }
+        .project-body h3 { margin-bottom: 8px; color: #ff6b6b; }
+        .project-body p { color: #888; font-size: 0.95rem; line-height: 1.5; margin-bottom: 12px; }
+        .tag { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; background: rgba(255,107,107,0.15); color: #ff6b6b; margin-right: 6px; }
+        .contact-section { text-align: center; padding: 60px 20px; }
+        .contact-section h2 { font-size: 2rem; margin-bottom: 12px; }
+        .contact-section p { color: #888; margin-bottom: 24px; }
+        .contact-links { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+        .contact-links a { padding: 12px 24px; border-radius: 8px; background: #1a1a3e; color: #ff6b6b; text-decoration: none; border: 1px solid rgba(255,107,107,0.2); transition: background 0.3s; }
+        .contact-links a:hover { background: #2a1a4e; }
+        footer { text-align: center; padding: 40px; color: #555; font-size: 0.9rem; }
+        @media (max-width: 768px) { header h1 { font-size: 2rem; } .projects { padding: 20px; } }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Mon Portfolio</h1>
+        <p>Développeur passionné — Je crée des applications web modernes et performantes.</p>
+    </header>
+    <section class="projects">
+        <div class="project">
+            <div class="project-img">🚀</div>
+            <div class="project-body">
+                <h3>Projet Alpha</h3>
+                <p>Application web fullstack avec authentification JWT et base de données temps réel.</p>
+                <span class="tag">React</span><span class="tag">Node.js</span><span class="tag">MongoDB</span>
+            </div>
+        </div>
+        <div class="project">
+            <div class="project-img">📊</div>
+            <div class="project-body">
+                <h3>Dashboard Analytics</h3>
+                <p>Tableau de bord interactif avec visualisation de données et export CSV.</p>
+                <span class="tag">Python</span><span class="tag">Flask</span><span class="tag">Chart.js</span>
+            </div>
+        </div>
+        <div class="project">
+            <div class="project-img">🎮</div>
+            <div class="project-body">
+                <h3>Snake Game</h3>
+                <p>Jeu classique Snake entièrement jouable dans le navigateur.</p>
+                <span class="tag">HTML5</span><span class="tag">Canvas</span><span class="tag">JS</span>
+            </div>
+        </div>
+    </section>
+    <section class="contact-section">
+        <h2>Me contacter</h2>
+        <p>Disponible pour des projets freelance et collaborations.</p>
+        <div class="contact-links">
+            <a href="mailto:contact@example.com">Email</a>
+            <a href="https://github.com" target="_blank">GitHub</a>
+            <a href="https://linkedin.com" target="_blank">LinkedIn</a>
+        </div>
+    </section>
+    <footer>&copy; 2026 Portfolio — YELMON Dev X</footer>
+</body>
+</html>
+'''
+
+
+@_html("contact_form")
+def _html_contact_form(p):
+    return '''\
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact — YELMON</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f23; color: #e0e0e0; min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        .form-container { width: 100%; max-width: 480px; background: #1a1a3e; border-radius: 16px; padding: 40px; border: 1px solid rgba(255,107,107,0.1); }
+        h1 { font-size: 1.8rem; margin-bottom: 8px; background: linear-gradient(135deg, #ff6b6b, #ffa500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .subtitle { color: #888; margin-bottom: 28px; }
+        .field { margin-bottom: 20px; }
+        .field label { display: block; font-size: 0.85rem; color: #aaa; margin-bottom: 6px; }
+        .field input, .field textarea { width: 100%; padding: 12px; border: 1px solid #333; border-radius: 8px; background: #0d0d2b; color: #fff; font-size: 14px; font-family: inherit; outline: none; transition: border-color 0.3s; }
+        .field input:focus, .field textarea:focus { border-color: #ff6b6b; }
+        .field textarea { resize: vertical; min-height: 120px; }
+        .btn-submit { width: 100%; padding: 14px; border: none; border-radius: 8px; background: linear-gradient(135deg, #ff6b6b, #ffa500); color: #fff; font-size: 1rem; font-weight: 600; cursor: pointer; transition: opacity 0.3s; }
+        .btn-submit:hover { opacity: 0.9; }
+        .success { display: none; text-align: center; padding: 40px 20px; }
+        .success h2 { color: #4CAF50; margin-bottom: 8px; }
+        .success p { color: #888; }
+        @media (max-width: 480px) { .form-container { padding: 24px; } }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <div id="formSection">
+            <h1>Contactez-nous</h1>
+            <p class="subtitle">Nous vous répondrons sous 24h.</p>
+            <form id="contactForm" onsubmit="return handleSubmit(event)">
+                <div class="field">
+                    <label>Nom</label>
+                    <input type="text" id="nom" placeholder="Votre nom" required>
+                </div>
+                <div class="field">
+                    <label>Email</label>
+                    <input type="email" id="email" placeholder="votre@email.com" required>
+                </div>
+                <div class="field">
+                    <label>Message</label>
+                    <textarea id="message" placeholder="Votre message..." required></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Envoyer</button>
+            </form>
+        </div>
+        <div class="success" id="successSection">
+            <h2>Message envoyé !</h2>
+            <p>Merci pour votre message. Nous vous répondrons bientôt.</p>
+        </div>
+    </div>
+    <script>
+        function handleSubmit(e) {
+            e.preventDefault();
+            document.getElementById("formSection").style.display = "none";
+            document.getElementById("successSection").style.display = "block";
+            return false;
+        }
+    </script>
+</body>
+</html>
+'''
+
+
+@_html("dashboard")
+def _html_dashboard(p):
+    return '''\
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — YELMON</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f23; color: #e0e0e0; display: flex; min-height: 100vh; }
+        .sidebar { width: 240px; background: #1a1a3e; padding: 24px 16px; border-right: 1px solid #2a2a4e; }
+        .sidebar h2 { font-size: 1.2rem; margin-bottom: 32px; color: #ff6b6b; padding: 0 8px; }
+        .sidebar a { display: block; padding: 10px 12px; color: #888; text-decoration: none; border-radius: 8px; margin-bottom: 4px; transition: background 0.2s, color 0.2s; }
+        .sidebar a:hover, .sidebar a.active { background: rgba(255,107,107,0.1); color: #ff6b6b; }
+        .main { flex: 1; padding: 32px; }
+        .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 32px; }
+        .topbar h1 { font-size: 1.5rem; }
+        .topbar .user { color: #888; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 32px; }
+        .stat-card { background: #1a1a3e; border-radius: 12px; padding: 24px; border: 1px solid rgba(255,107,107,0.08); }
+        .stat-card .label { font-size: 0.85rem; color: #888; margin-bottom: 8px; }
+        .stat-card .value { font-size: 2rem; font-weight: 700; color: #ff6b6b; }
+        .table-card { background: #1a1a3e; border-radius: 12px; padding: 24px; border: 1px solid rgba(255,107,107,0.08); }
+        .table-card h3 { margin-bottom: 16px; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #2a2a4e; }
+        th { color: #888; font-size: 0.85rem; text-transform: uppercase; }
+        .badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; }
+        .badge-active { background: rgba(76,175,80,0.15); color: #4CAF50; }
+        .badge-inactive { background: rgba(255,80,80,0.15); color: #ff6b6b; }
+        @media (max-width: 768px) { .sidebar { display: none; } .stats { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+    <aside class="sidebar">
+        <h2>YELMON Admin</h2>
+        <a href="#" class="active">Tableau de bord</a>
+        <a href="#">Utilisateurs</a>
+        <a href="#">Projets</a>
+        <a href="#">Paramètres</a>
+    </aside>
+    <main class="main">
+        <div class="topbar">
+            <h1>Tableau de bord</h1>
+            <span class="user">Admin</span>
+        </div>
+        <div class="stats">
+            <div class="stat-card"><div class="label">Utilisateurs</div><div class="value">128</div></div>
+            <div class="stat-card"><div class="label">Projets</div><div class="value">47</div></div>
+            <div class="stat-card"><div class="label">Code généré</div><div class="value">1.2k</div></div>
+            <div class="stat-card"><div class="label">Uptime</div><div class="value">99%</div></div>
+        </div>
+        <div class="table-card">
+            <h3>Utilisateurs récents</h3>
+            <table>
+                <thead><tr><th>Nom</th><th>Email</th><th>Statut</th></tr></thead>
+                <tbody>
+                    <tr><td>Alice</td><td>alice@example.com</td><td><span class="badge badge-active">Actif</span></td></tr>
+                    <tr><td>Bob</td><td>bob@example.com</td><td><span class="badge badge-active">Actif</span></td></tr>
+                    <tr><td>Charlie</td><td>charlie@example.com</td><td><span class="badge badge-inactive">Inactif</span></td></tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+</body>
+</html>
+'''
+
+
+@_html("default")
+def _html_default(p):
+    return '''\
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Page YELMON</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', system-ui, sans-serif; background: #0f0f23; color: #e0e0e0; display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .card { background: #1a1a3e; border-radius: 16px; padding: 48px; text-align: center; max-width: 500px; width: 100%; border: 1px solid rgba(255,107,107,0.1); }
+        h1 { font-size: 2rem; margin-bottom: 12px; background: linear-gradient(135deg, #ff6b6b, #ffa500); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        p { color: #888; line-height: 1.6; }
+        footer { margin-top: 32px; color: #555; font-size: 0.85rem; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>YELMON Dev X</h1>
+        <p>Page générée automatiquement. Modifiez ce fichier selon vos besoins.</p>
+        <footer>&copy; 2026 Yems junior lendola — All Rights Reserved.</footer>
+    </div>
+</body>
+</html>
+'''
+
+
+_HTML_KEYWORD_MAP = [
+    (["landing", "page d'accueil", "page vitrine", "one page"], "landing_page"),
+    (["portfolio", "cv", "profil", "about me"], "portfolio"),
+    (["formulaire", "contact", "form", "email"], "contact_form"),
+    (["dashboard", "tableau de bord", "admin", "panel"], "dashboard"),
+]

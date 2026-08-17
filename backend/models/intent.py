@@ -10,19 +10,25 @@ def _norm(text: str) -> str:
 _INTENT_KEYWORDS = {
     "api": ["api", "rest", "endpoint", "route", "serveur", "server"],
     "webapp": ["webapp", "web app", "site web", "frontend", "page web", "dashboard"],
+    "html_page": ["page html", "landing page", "portfolio", "site vitrine", "one page",
+                   "page d'accueil", "accueil site", "page statique", "page web pure",
+                   "html css", "page responsive", "formulaire contact"],
     "cli": ["cli", "command line", "terminal", "ligne de commande", "argparse"],
     "game": ["jeu", "game", "snake", "tetris", "pong", "pygame", "gameboy"],
     "bot": ["bot", "telegram", "discord", "slack", "chatbot"],
-    "scraper": ["scrap", "crawl", "parse", "html", "BeautifulSoup", "selenium"],
-    "desktop": ["desktop", "gui", "interface", "tkinter", "qt", "pyqt"],
-    "data": ["data", "csv", "json", "pandas", "numpy", "analyse", "dataset"],
-    "ml": ["machine learning", "ml", "ia", "ai", "neural", "tensorflow", "pytorch", "sklearn"],
+    "scraper": ["scrap", "crawl", "beautifulsoup", "selenium"],
+    "desktop": ["desktop", "gui", "interface graphique", "tkinter", "qt", "pyqt"],
+    "data": ["data", "csv", "json", "pandas", "numpy", "analyse de données", "dataset"],
+    "ml": ["machine learning", "ml", "neural", "tensorflow", "pytorch", "sklearn",
+           "réseau de neurones", "classification", "régression"],
     "auth": ["auth", "login", "jwt", "token", "password", "inscription"],
     "database": ["database", "base de données", "sql", "sqlite", "postgres", "mysql", "mongodb"],
     "websocket": ["websocket", "socket", "temps réel", "realtime"],
     "docker": ["docker", "container", "dockerfile", "compose"],
     "testing": ["test", "unittest", "pytest", "jest"],
     "fullstack": ["fullstack", "full stack", "projet complet", "application complète"],
+    "classe": ["classe", "class", "objet", "oop", "héritage", "abstrait", "interface java",
+               "constructeur", "attribut", "méthode"],
 }
 
 _FRAMEWORK_KEYWORDS = {
@@ -94,15 +100,20 @@ def detect_intent(prompt: str) -> dict:
     elif len(p.split()) > 10 or len(features) > 1:
         complexity = "medium"
 
-    # Language hints
+    # Language hints — order matters: more specific first
     language_hints = []
     lang_patterns = {
-        "python": ["python", "py", "pip", "flask", "fastapi", "django", "pandas"],
-        "javascript": ["javascript", "js", "node", "npm", "express", "react", "vue"],
-        "java": ["java", "spring", "maven", "gradle"],
-        "go": ["golang", "go", "gin"],
-        "rust": ["rust", "cargo"],
-        "cpp": ["c++", "cpp", "cmake"],
+        "python": ["python", "py", "pip", "flask", "fastapi", "django", "pandas",
+                   "tkinter", "pygame"],
+        "javascript": ["javascript", "js", "node", "npm", "express", "react", "vue",
+                       "angular", "svelte"],
+        "java": ["java", "spring", "maven", "gradle", "classe java", "jakarta"],
+        "go": ["golang", "gin framework", "go lang"],
+        "rust": ["rust", "cargo", "actix", "tokio"],
+        "cpp": ["c++", "cpp", "cmake", "std::"],
+        "html": ["html", "css", "landing page", "portfolio", "page web pure",
+                 "page html", "site vitrine", "formulaire", "responsive html",
+                 "one page", "page statique", "page d'accueil"],
     }
     for lang, keywords in lang_patterns.items():
         if any(kw in p for kw in keywords):

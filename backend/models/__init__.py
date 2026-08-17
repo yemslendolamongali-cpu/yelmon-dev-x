@@ -1,7 +1,7 @@
 """YELMON Dev X - Moteur de génération de code avancé.
 
 Route intelligent par langage → intent → keywords → template.
-Supporte : Python, JavaScript, Java, Go, Rust, C++.
+Supporte : Python, JavaScript, Java, Go, Rust, C++, HTML/CSS.
 """
 
 import re
@@ -13,6 +13,7 @@ from models.templates import (
     GO_TEMPLATES, _GO_KEYWORD_MAP,
     RUST_TEMPLATES, _RUST_KEYWORD_MAP,
     CPP_TEMPLATES, _CPP_KEYWORD_MAP,
+    HTML_TEMPLATES, _HTML_KEYWORD_MAP,
 )
 
 
@@ -46,11 +47,23 @@ class CodeGenerator:
             "rust": self._gen_rust,
             "cpp": self._gen_cpp,
             "c++": self._gen_cpp,
+            "html": self._gen_html,
+            "css": self._gen_html,
         }
+
+    def _auto_detect_language(self, prompt: str) -> str:
+        """Détecte automatiquement le langage à partir du prompt."""
+        analysis = detect_intent(prompt)
+        hints = analysis.get("language_hints", [])
+        if hints:
+            return hints[0]
+        return "python"
 
     def generate(self, prompt: str, language: str = "python") -> str:
         """Point d'entrée principal. Génère du code pour le langage demandé."""
         language = (language or "python").lower().strip()
+        if language in ("auto", "automatic", "auto-detect"):
+            language = self._auto_detect_language(prompt)
         handler = self._lang_handlers.get(language, self._gen_python)
         try:
             return handler(prompt)
@@ -164,7 +177,7 @@ console.log(maFonction(1, 2, 3, 4));
         tpl_name = _match_keyword(p, _JAVA_KEYWORD_MAP)
         if tpl_name and tpl_name in JAVA_TEMPLATES:
             return JAVA_TEMPLATES[tpl_name](p)
-        return JAVA_TEMPLATES["_default"](p)
+        return JAVA_TEMPLATES["default"](p)
 
     # ---------------------------------------------------------------
     # Go
@@ -175,7 +188,7 @@ console.log(maFonction(1, 2, 3, 4));
         tpl_name = _match_keyword(p, _GO_KEYWORD_MAP)
         if tpl_name and tpl_name in GO_TEMPLATES:
             return GO_TEMPLATES[tpl_name](p)
-        return GO_TEMPLATES["_default"](p)
+        return GO_TEMPLATES["default"](p)
 
     # ---------------------------------------------------------------
     # Rust
@@ -186,7 +199,7 @@ console.log(maFonction(1, 2, 3, 4));
         tpl_name = _match_keyword(p, _RUST_KEYWORD_MAP)
         if tpl_name and tpl_name in RUST_TEMPLATES:
             return RUST_TEMPLATES[tpl_name](p)
-        return RUST_TEMPLATES["_default"](p)
+        return RUST_TEMPLATES["default"](p)
 
     # ---------------------------------------------------------------
     # C++
@@ -197,7 +210,29 @@ console.log(maFonction(1, 2, 3, 4));
         tpl_name = _match_keyword(p, _CPP_KEYWORD_MAP)
         if tpl_name and tpl_name in CPP_TEMPLATES:
             return CPP_TEMPLATES[tpl_name](p)
-        return CPP_TEMPLATES["_default"](p)
+        return CPP_TEMPLATES["default"](p)
+
+    # ---------------------------------------------------------------
+    # HTML/CSS
+    # ---------------------------------------------------------------
+
+    def _gen_html(self, prompt: str) -> str:
+        p = _norm(prompt)
+        analysis = detect_intent(prompt)
+
+        tpl_name = _match_keyword(p, _HTML_KEYWORD_MAP)
+        if tpl_name and tpl_name in HTML_TEMPLATES:
+            return HTML_TEMPLATES[tpl_name](p)
+
+        intent_map = {
+            "html_page": "landing_page",
+            "webapp": "landing_page",
+        }
+        tpl_name = intent_map.get(analysis["intent"])
+        if tpl_name and tpl_name in HTML_TEMPLATES:
+            return HTML_TEMPLATES[tpl_name](p)
+
+        return HTML_TEMPLATES["default"](p)
 
     # ---------------------------------------------------------------
     # Fallback

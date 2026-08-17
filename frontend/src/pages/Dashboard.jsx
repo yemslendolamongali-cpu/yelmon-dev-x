@@ -21,12 +21,14 @@ import '../styles/yelmon.css';
 const APP_NAME = 'YELMON Dev X';
 
 const LANGUAGES = {
+    auto: { name: 'Auto', icon: '⚡' },
     python: { name: 'Python', icon: 'PY' },
     javascript: { name: 'JavaScript', icon: 'JS' },
     java: { name: 'Java', icon: 'JV' },
     cpp: { name: 'C++', icon: 'CP' },
     go: { name: 'Go', icon: 'GO' },
     rust: { name: 'Rust', icon: 'RS' },
+    html: { name: 'HTML/CSS', icon: '◇' },
 };
 
 const languageExtensions = {
@@ -59,7 +61,7 @@ function Dashboard() {
     const navigate = useNavigate();
     const { user, logout } = useAuth();
     const { theme, switchTheme } = useTheme();
-    const [language, setLanguage] = useState('python');
+    const [language, setLanguage] = useState('auto');
     const [prompt, setPrompt] = useState('');
     const [code, setCode] = useState(DEFAULT_CODE);
     const [output, setOutput] = useState('');
@@ -380,6 +382,18 @@ function Dashboard() {
                 </div>
 
                 <div className="input-area">
+                    <div className="lang-selector">
+                        {Object.entries(LANGUAGES).map(([key, { name, icon }]) => (
+                            <button
+                                key={key}
+                                className={`lang-btn ${language === key ? 'active' : ''}`}
+                                onClick={() => setLanguage(key)}
+                            >
+                                <span className="lang-icon">{icon}</span>
+                                <span className="lang-name">{name}</span>
+                            </button>
+                        ))}
+                    </div>
                     <div className="input-bar">
                         <input
                             type="text"

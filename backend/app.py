@@ -78,6 +78,7 @@ import psutil
 from auth import hash_password, verify_password, create_token, decode_token
 from rag import RAGEngine
 from models import CodeGenerator
+from models.intent import detect_intent
 from agent import YelmonAgent
 from tokenizer import count_tokens
 
@@ -291,23 +292,29 @@ def auth_delete():
 def generate():
     data = request.get_json(silent=True) or {}
     prompt = str(data.get("prompt", "")).strip()
-    language = str(data.get("language", "python")).strip().lower()
+    language = str(data.get("language", "auto")).strip().lower()
 
     if not prompt:
         return jsonify({"error": "Aucune description fournie"}), 400
 
     start = time.time()
+    resolved_language = language
+    if language in ("auto", "automatic", "auto-detect", ""):
+        analysis = detect_intent(prompt)
+        hints = analysis.get("language_hints", [])
+        resolved_language = hints[0] if hints else "python"
+
     code = generator.generate(prompt, language)
-    output = f" Code {language} généré en {time.time() - start:.2f}s"
+    output = f" Code {resolved_language} généré en {time.time() - start:.2f}s"
 
     add_history({
-        "language": language,
+        "language": resolved_language,
         "prompt": prompt,
         "code": code,
         "output": output,
         "success": True,
     })
-    return jsonify({"code": code, "output": output, "language": language})
+    return jsonify({"code": code, "output": output, "language": resolved_language})
 
 
 @app.route("/api/history")
@@ -366,7 +373,7 @@ def execute():
 
     return jsonify({
         "output": "",
-        "error": f"Exécution sandbox non disponible pour '{language}' (utilisez Python)",
+        "error": f"Exécution sandbox non disponible pour '{language}' (utilisez Python ou HTML dans le navigateur)",
     }), 400
 
 
@@ -547,12 +554,17 @@ def on_connect():
 @socketio.on("generate")
 def on_generate(data):
     prompt = str(data.get("prompt", "")).strip()
-    language = str(data.get("language", "python")).strip().lower()
+    language = str(data.get("language", "auto")).strip().lower()
     if not prompt:
         emit("generate_result", {"error": "Aucune description"})
         return
+    resolved_language = language
+    if language in ("auto", "automatic", "auto-detect", ""):
+        analysis = detect_intent(prompt)
+        hints = analysis.get("language_hints", [])
+        resolved_language = hints[0] if hints else "python"
     code = generator.generate(prompt, language)
-    emit("generate_result", {"code": code, "language": language})
+    emit("generate_result", {"code": code, "language": resolved_language})
 
 
 @socketio.on("stats")

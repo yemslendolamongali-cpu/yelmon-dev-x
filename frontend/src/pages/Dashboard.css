@@ -418,6 +418,48 @@
     border-top: 1px solid var(--divider);
 }
 
+.lang-selector {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.lang-btn {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 10px;
+    border: 1px solid var(--input-border);
+    border-radius: 8px;
+    background: var(--input-bg);
+    color: var(--text-muted);
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'Space Grotesk', sans-serif;
+}
+
+.lang-btn:hover {
+    border-color: var(--input-focus-border);
+    color: var(--text-primary);
+}
+
+.lang-btn.active {
+    border-color: #ff6b6b;
+    background: rgba(255, 107, 107, 0.1);
+    color: #ff6b6b;
+    font-weight: 600;
+}
+
+.lang-icon {
+    font-size: 12px;
+}
+
+.lang-name {
+    font-size: 11px;
+}
+
 .input-bar {
     display: flex;
     align-items: center;
@@ -841,6 +883,19 @@
     /* Input area padding for bottom nav */
     .input-area {
         padding-bottom: 60px;
+    }
+
+    .lang-selector {
+        gap: 4px;
+    }
+
+    .lang-btn {
+        padding: 4px 8px;
+        font-size: 10px;
+    }
+
+    .lang-name {
+        display: none;
     }
 
     /* Float window hidden on mobile */
