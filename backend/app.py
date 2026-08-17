@@ -593,11 +593,12 @@ app_start_time = time.time()
 def _ensure_admin_account():
     """Crée le compte admin par défaut s'il n'existe pas."""
     try:
-        admin_user = os.environ.get("YELMON_ADMIN_USER", "01yem's")
+        admin_user = os.environ.get("YELMON_ADMIN_USER", "yems")
         admin_pass = os.environ.get("YELMON_ADMIN_PASS", "Kanikayo00")
         admin_name = os.environ.get("YELMON_ADMIN_NAME", "Yems junior lendola")
         admin_email = os.environ.get("YELMON_ADMIN_EMAIL", "yemsjuniorlendola@gmail.com")
         users = _read_json(USERS_FILE, {})
+        # Crée le compte admin principal
         if admin_user not in users:
             users[admin_user] = {
                 "password": hash_password(admin_pass),
@@ -607,10 +608,19 @@ def _ensure_admin_account():
                 "display_name": admin_name,
                 "role": "admin",
             }
-            _write_json(USERS_FILE, users)
-            print(f"[YELMON Dev X] Compte admin cree: {admin_user}")
-        else:
-            print(f"[YELMON Dev X] Compte admin existant: {admin_user}")
+        # Crée aussi un accès par email
+        email_user = "__email_yemsjuniorlendola"
+        if email_user not in users:
+            users[email_user] = {
+                "password": hash_password(admin_pass),
+                "created_at": datetime.now(timezone.utc).isoformat(),
+                "email": admin_email,
+                "phone": None,
+                "display_name": admin_name,
+                "role": "admin",
+            }
+        _write_json(USERS_FILE, users)
+        print(f"[YELMON Dev X] Comptes admin prêts: {admin_user} / {admin_email}")
     except Exception as e:
         print(f"[YELMON Dev X] Erreur creation admin: {e}")
 
