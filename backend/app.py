@@ -617,7 +617,7 @@ def _ensure_admin_account():
 
 def main():
     host = os.environ.get("YELMON_HOST", "0.0.0.0")
-    port = int(os.environ.get("YELMON_PORT", "5001"))
+    port = int(os.environ.get("YELMON_PORT", os.environ.get("PORT", "5001")))
     debug = os.environ.get("YELMON_DEBUG", "0") == "1"
 
     print(f"[YELMON Dev X] Backend démarré sur http://{host}:{port}")
