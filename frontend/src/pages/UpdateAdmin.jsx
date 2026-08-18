@@ -58,6 +58,9 @@ function UpdateAdmin() {
     const backupsApi = useAdminApi('/api/admin/update/backups');
     const gitLogApi = useAdminApi('/api/admin/update/git-log');
     const diskApi = useAdminApi('/api/admin/update/disk');
+    const userBackupsApi = useAdminApi('/api/admin/users/backups');
+    const userListApi = useAdminApi('/api/admin/users/list');
+    const userExportApi = useAdminApi('/api/admin/users/export');
 
     const refreshStatus = useCallback(async () => {
         const s = await statusApi.execute();
@@ -85,6 +88,7 @@ function UpdateAdmin() {
         if (t === 'git') await gitLogApi.execute();
         if (t === 'disk') await diskApi.execute();
         if (t === 'backups') await backupsApi.execute();
+        if (t === 'users') { await userBackupsApi.execute(); await userListApi.execute(); }
     }, []);
 
     const task = status?.current_task || {};
@@ -178,6 +182,9 @@ function UpdateAdmin() {
                     </button>
                     <button className={`update-tab ${tab === 'backups' ? 'active' : ''}`} onClick={() => loadTab('backups')}>
                         Sauvegardes
+                    </button>
+                    <button className={`update-tab ${tab === 'users' ? 'active' : ''}`} onClick={() => loadTab('users')}>
+                        Utilisateurs
                     </button>
                     <button className={`update-tab ${tab === 'disk' ? 'active' : ''}`} onClick={() => loadTab('disk')}>
                         Espace disque
@@ -300,6 +307,97 @@ function UpdateAdmin() {
                             {Object.keys(diskApi.data || {}).length === 0 && (
                                 <div className="empty-state">Chargement...</div>
                             )}
+                        </div>
+                    </div>
+                )}
+
+                {tab === 'users' && (
+                    <div>
+                        <div className="action-panel">
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
+                                <div>
+                                    <h2>Utilisateurs enregistrés</h2>
+                                    <p>{userListApi.data?.total || 0} compte(s) au total</p>
+                                </div>
+                                <button className="back-btn" onClick={async () => {
+                                    const r = await userExportApi.execute();
+                                    if (r) {
+                                        const blob = new Blob([JSON.stringify(r, null, 2)], { type: 'application/json' });
+                                        const url = URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.href = url;
+                                        a.download = `yelmon_users_export_${new Date().toISOString().slice(0,10)}.json`;
+                                        a.click();
+                                        URL.revokeObjectURL(url);
+                                    }
+                                }}>
+                                    ⬇ Exporter JSON
+                                </button>
+                            </div>
+                            <div className="git-log-list" style={{ marginTop: 20 }}>
+                                {(userListApi.data?.users || []).length === 0 ? (
+                                    <div className="empty-state">Chargement...</div>
+                                ) : (
+                                    (userListApi.data?.users || []).map((u, i) => (
+                                        <div key={i} className="git-commit">
+                                            <span className="git-hash" style={{ minWidth: 40, textAlign: 'center' }}>
+                                                {u.role === 'admin' ? '👑' : '👤'}
+                                            </span>
+                                            <span className="git-msg">
+                                                <strong>{u.display_name || u.username}</strong>
+                                                <span style={{ color: '#6a5a8a', marginLeft: 8 }}>@{u.username}</span>
+                                            </span>
+                                            <span className="git-date">{u.email || '—'}</span>
+                                            <span className="git-date">{u.phone || '—'}</span>
+                                            <span style={{
+                                                padding: '3px 10px',
+                                                borderRadius: 6,
+                                                fontSize: 11,
+                                                fontWeight: 700,
+                                                background: u.role === 'admin' ? 'rgba(233,69,96,0.2)' : 'rgba(74,222,128,0.15)',
+                                                color: u.role === 'admin' ? '#e94560' : '#4ade80',
+                                            }}>
+                                                {u.role}
+                                            </span>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="action-panel" style={{ marginTop: 20 }}>
+                            <h2>Historique des inscriptions</h2>
+                            <p>{userBackupsApi.data?.total || 0} inscription(s) sauvegardée(s)</p>
+                            <div className="git-log-list" style={{ marginTop: 16 }}>
+                                {(userBackupsApi.data?.backups || []).length === 0 ? (
+                                    <div className="empty-state">Chargement...</div>
+                                ) : (
+                                    (userBackupsApi.data?.backups || []).slice().reverse().map((b, i) => (
+                                        <div key={i} className="git-commit">
+                                            <span className="git-hash" style={{ minWidth: 40, textAlign: 'center' }}>
+                                                {b.account_exists ? '✅' : '❌'}
+                                            </span>
+                                            <span className="git-msg">
+                                                <strong>{b.display_name || b.username}</strong>
+                                                <span style={{ color: '#6a5a8a', marginLeft: 8 }}>@{b.username}</span>
+                                            </span>
+                                            <span className="git-date">{b.email || '—'}</span>
+                                            <span className="git-date">{b.phone || '—'}</span>
+                                            <span className="git-date">{b.registered_at ? new Date(b.registered_at).toLocaleDateString() : '—'}</span>
+                                            <span style={{
+                                                padding: '3px 10px',
+                                                borderRadius: 6,
+                                                fontSize: 11,
+                                                fontWeight: 700,
+                                                background: b.current_role === 'admin' ? 'rgba(233,69,96,0.2)' : b.account_exists ? 'rgba(74,222,128,0.15)' : 'rgba(248,113,113,0.15)',
+                                                color: b.current_role === 'admin' ? '#e94560' : b.account_exists ? '#4ade80' : '#f87171',
+                                            }}>
+                                                {b.current_role === 'admin' ? 'admin' : b.account_exists ? 'actif' : 'supprimé'}
+                                            </span>
+                                        </div>
+                                    ))
+                                )}
+                            </div>
                         </div>
                     </div>
                 )}

@@ -43,6 +43,7 @@ SNIPPETS_FILE = DATA_DIR / "snippets.json"
 USERS_FILE = DATA_DIR / "users.json"
 STATS_FILE = DATA_DIR / "stats.json"
 CONTACT_FILE = DATA_DIR / "contact.json"
+USER_BACKUPS_FILE = DATA_DIR / "user_backups.json"
 
 JWT_SECRET = os.environ.get("YELMON_SECRET", "yelmon-dev-x-local-secret-key-2026-8e2f1c0a")
 JWT_EXPIRES_HOURS = 24
@@ -151,6 +152,19 @@ def require_token(fn):
     return wrapper
 
 
+def _backup_user_registration(username, email, phone, display_name):
+    """Sauvegarde les informations de connexion d'un nouvel utilisateur."""
+    backups = _read_json(USER_BACKUPS_FILE, [])
+    backups.append({
+        "username": username,
+        "email": email or None,
+        "phone": phone or None,
+        "display_name": display_name or username,
+        "registered_at": datetime.now(timezone.utc).isoformat(),
+    })
+    _write_json(USER_BACKUPS_FILE, backups)
+
+
 # ---------------------------------------------------------------------------
 # Routes d'information
 # ---------------------------------------------------------------------------
@@ -214,6 +228,7 @@ def register():
         "role": "user",
     }
     _write_json(USERS_FILE, users)
+    _backup_user_registration(username, email, phone, display_name)
     if HAS_JWT:
         token = create_token({"username": username}, JWT_SECRET, JWT_EXPIRES_HOURS)
         return jsonify({"token": token, "username": username})
@@ -648,6 +663,60 @@ def admin_update_disk():
     if not admin:
         return jsonify({"error": "Accès refusé"}), 403
     return jsonify(get_disk_usage())
+
+
+@app.route("/api/admin/users/backups")
+def admin_user_backups():
+    """Liste de toutes les sauvegardes d'inscriptions utilisateurs."""
+    admin = _require_admin()
+    if not admin:
+        return jsonify({"error": "Accès refusé"}), 403
+    backups = _read_json(USER_BACKUPS_FILE, [])
+    users = _read_json(USERS_FILE, {})
+    enriched = []
+    for b in backups:
+        u = users.get(b.get("username", ""), {})
+        enriched.append({
+            **b,
+            "current_role": u.get("role", "deleted"),
+            "account_exists": bool(u),
+        })
+    return jsonify({"backups": enriched, "total": len(enriched)})
+
+
+@app.route("/api/admin/users/list")
+def admin_user_list():
+    """Liste de tous les utilisateurs (sans mots de passe)."""
+    admin = _require_admin()
+    if not admin:
+        return jsonify({"error": "Accès refusé"}), 403
+    users = _read_json(USERS_FILE, {})
+    safe_users = []
+    for uname, udata in users.items():
+        safe_users.append({
+            "username": uname,
+            "email": udata.get("email"),
+            "phone": udata.get("phone"),
+            "display_name": udata.get("display_name", uname),
+            "role": udata.get("role", "user"),
+            "created_at": udata.get("created_at", ""),
+        })
+    return jsonify({"users": safe_users, "total": len(safe_users)})
+
+
+@app.route("/api/admin/users/export")
+def admin_user_export():
+    """Export JSON de tous les backups d'inscription."""
+    admin = _require_admin()
+    if not admin:
+        return jsonify({"error": "Accès refusé"}), 403
+    backups = _read_json(USER_BACKUPS_FILE, [])
+    return jsonify({
+        "exported_at": datetime.now(timezone.utc).isoformat(),
+        "app_version": APP_VERSION if 'APP_VERSION' in dir() else "1.0.0",
+        "total_registrations": len(backups),
+        "registrations": backups,
+    })
 
 
 # ---------------------------------------------------------------------------
