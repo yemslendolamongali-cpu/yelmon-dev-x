@@ -119,27 +119,32 @@ def _auto_fix_python(code: str) -> str:
     for pattern, replacement in _PY_FIXES:
         fixed = re.sub(pattern, replacement, fixed, flags=re.M)
 
-    # Ajouter les deux-points manquants après def, class, if, elif, else, for, while, try, except, finally, with
-    fixed = re.sub(
-        r"^(\s*(?:def|class|if|elif|else|for|while|try|except|finally|with|async for|async with)\b[^:#]*[^\s:,#])\s*$",
-        lambda m: m.group(1).rstrip() + ":",
-        fixed,
-        flags=re.M,
+    # Ajouter les deux-points manquants après def, class, if, etc.
+    keyword_re = re.compile(
+        r"^(\s*(?:async\s+)?(?:def|class|if|elif|else|for|while|try|except|finally|with)\b.*?)\s*$"
     )
-
-    # Corriger indentation cassée
     lines = fixed.split("\n")
     result = []
     for ln in lines:
+        m = keyword_re.match(ln)
+        if m:
+            content = m.group(1).rstrip()
+            if not content.endswith(":"):
+                content += ":"
+            result.append(content)
+        else:
+            result.append(ln)
+
+    # Corriger indentation cassée
+    for i, ln in enumerate(result):
         stripped = ln.lstrip()
         if stripped and not ln.startswith((" ", "\t")) and stripped not in (
             "import", "from", "class", "def", "if", "for", "while", "try",
             "except", "finally", "with", "elif", "else", "return", "raise",
         ) and not stripped.startswith(("#", "@", '"""', "'''", "def ", "class ", "if ", "for ", "while ")):
             if not ln.endswith(("\\", ":", ",", "(", "[", "{")):
-                result.append("    " + ln)
-                continue
-        result.append(ln)
+                result[i] = "    " + ln
+
     return "\n".join(result)
 
 
