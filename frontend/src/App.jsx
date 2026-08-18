@@ -15,6 +15,7 @@ import Projects from './pages/Projects';
 import Bibliotheque from './pages/Bibliotheque';
 import Historique from './pages/Historique';
 import Contact from './pages/Contact';
+import BackendDev from './pages/BackendDev';
 
 function ProtectedRoute({ children }) {
     const { user, loading } = useAuth();
@@ -55,6 +56,7 @@ function App() {
                     <Route path="/bibliotheque" element={<ProtectedRoute><Bibliotheque /></ProtectedRoute>} />
                     <Route path="/historique" element={<ProtectedRoute><Historique /></ProtectedRoute>} />
                     <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
+                    <Route path="/backend-dev" element={<ProtectedRoute><BackendDev /></ProtectedRoute>} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </div>

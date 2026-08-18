@@ -248,6 +248,10 @@ function Dashboard() {
                         <span className="nav-icon">📜</span>
                         Historique
                     </div>
+                    <div className="nav-item" onClick={() => navigate('/backend-dev')}>
+                        <span className="nav-icon">🖥</span>
+                        Backend
+                    </div>
                     <div className="nav-item" onClick={() => setShowPreview(!showPreview)}>
                         <span className="nav-icon">▧</span>
                         Aperçu de l'app
