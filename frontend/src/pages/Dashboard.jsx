@@ -252,6 +252,10 @@ function Dashboard() {
                         <span className="nav-icon">🖥</span>
                         Backend
                     </div>
+                    <div className="nav-item" onClick={() => navigate('/update-admin')}>
+                        <span className="nav-icon">🔄</span>
+                        Mise à jour
+                    </div>
                     <div className="nav-item" onClick={() => setShowPreview(!showPreview)}>
                         <span className="nav-icon">▧</span>
                         Aperçu de l'app

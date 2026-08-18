@@ -1,0 +1,397 @@
+/* UpdateAdmin YELMON Dev X */
+.update-admin-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #0a0118 0%, #120525 40%, #1a0a3e 100%);
+    color: #e2d5f0;
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    padding: 0;
+}
+
+.update-admin-bg {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 20% 50%, rgba(233,69,96,0.06) 0%, transparent 60%),
+                radial-gradient(ellipse at 80% 20%, rgba(15,52,96,0.12) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.update-admin-container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 30px 24px 60px;
+}
+
+.update-admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.update-admin-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #e94560, #ff6b8a, #ffa07a);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin: 0;
+}
+
+.update-admin-header .subtitle {
+    color: #8a7aaa;
+    font-size: 14px;
+}
+
+.back-btn {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #c9b8e8;
+    padding: 10px 20px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s;
+}
+
+.back-btn:hover {
+    background: rgba(233,69,96,0.15);
+    border-color: #e94560;
+    color: #fff;
+}
+
+/* Status Cards */
+.status-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 30px;
+}
+
+.status-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 18px;
+    transition: all 0.25s;
+}
+
+.status-card:hover {
+    border-color: rgba(233,69,96,0.3);
+    background: rgba(255,255,255,0.06);
+}
+
+.status-card .label {
+    font-size: 12px;
+    color: #7a6a9a;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.status-card .value {
+    font-size: 20px;
+    font-weight: 700;
+    color: #e2d5f0;
+}
+
+.status-card .value.ok { color: #4ade80; }
+.status-card .value.warn { color: #fbbf24; }
+.status-card .value.err { color: #f87171; }
+
+/* Tabs */
+.update-tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 24px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    padding: 4px;
+    overflow-x: auto;
+}
+
+.update-tab {
+    padding: 12px 22px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: #8a7aaa;
+    background: transparent;
+    border: none;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.update-tab:hover { color: #e2d5f0; background: rgba(255,255,255,0.05); }
+.update-tab.active {
+    background: linear-gradient(135deg, #e94560, #c73659);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(233,69,96,0.3);
+}
+
+/* Action Panel */
+.action-panel {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 16px;
+    padding: 28px;
+    margin-bottom: 24px;
+}
+
+.action-panel h2 {
+    font-size: 20px;
+    font-weight: 700;
+    color: #e2d5f0;
+    margin: 0 0 8px;
+}
+
+.action-panel p {
+    color: #8a7aaa;
+    font-size: 14px;
+    margin: 0 0 20px;
+}
+
+.action-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+}
+
+.action-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 14px;
+    padding: 22px;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.action-card:hover {
+    border-color: rgba(233,69,96,0.4);
+    background: rgba(233,69,96,0.08);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(233,69,96,0.15);
+}
+
+.action-card .icon {
+    font-size: 32px;
+    margin-bottom: 12px;
+}
+
+.action-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #e2d5f0;
+    margin: 0 0 6px;
+}
+
+.action-card p {
+    font-size: 13px;
+    color: #8a7aaa;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.action-card.danger:hover {
+    border-color: rgba(248,113,113,0.5);
+    background: rgba(248,113,113,0.08);
+}
+
+.action-card.success:hover {
+    border-color: rgba(74,222,128,0.5);
+    background: rgba(74,222,128,0.08);
+}
+
+/* Progress */
+.progress-bar {
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    margin: 16px 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #e94560, #ff6b8a);
+    border-radius: 3px;
+    transition: width 0.5s ease;
+}
+
+.task-status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 12px;
+    margin-bottom: 16px;
+    font-size: 14px;
+}
+
+.task-status .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.task-status .dot.idle { background: #666; }
+.task-status .dot.running { background: #fbbf24; animation: pulse 1.2s infinite; }
+.task-status .dot.completed { background: #4ade80; }
+.task-status .dot.error { background: #f87171; }
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+}
+
+/* Logs */
+.log-container {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 12px;
+    padding: 16px;
+    max-height: 400px;
+    overflow-y: auto;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+.log-entry {
+    padding: 2px 0;
+    color: #9a8aba;
+}
+
+.log-entry.info { color: #9a8aba; }
+.log-entry.warning { color: #fbbf24; }
+.log-entry.error { color: #f87171; }
+
+.log-entry .time {
+    color: #5a4a7a;
+    margin-right: 8px;
+}
+
+/* Git Log */
+.git-log-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.git-commit {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    transition: all 0.2s;
+}
+
+.git-commit:hover {
+    background: rgba(255,255,255,0.06);
+}
+
+.git-hash {
+    font-family: 'Cascadia Code', monospace;
+    font-size: 13px;
+    color: #e94560;
+    min-width: 70px;
+}
+
+.git-msg {
+    flex: 1;
+    font-size: 14px;
+    color: #c9b8e8;
+}
+
+.git-date {
+    font-size: 12px;
+    color: #6a5a8a;
+    white-space: nowrap;
+}
+
+/* Backup list */
+.backup-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.backup-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+}
+
+.backup-name {
+    font-family: 'Cascadia Code', monospace;
+    font-size: 13px;
+    color: #c9b8e8;
+}
+
+.backup-meta {
+    font-size: 12px;
+    color: #6a5a8a;
+}
+
+/* Disk usage */
+.disk-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 12px;
+}
+
+.disk-item {
+    background: rgba(255,255,255,0.03);
+    border-radius: 10px;
+    padding: 16px;
+    text-align: center;
+}
+
+.disk-item .name {
+    font-size: 12px;
+    color: #7a6a9a;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+}
+
+.disk-item .size {
+    font-size: 22px;
+    font-weight: 700;
+    color: #e94560;
+}
+
+.disk-item .unit {
+    font-size: 12px;
+    color: #8a7aaa;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #6a5a8a;
+    font-size: 14px;
+}
+
+@media (max-width: 768px) {
+    .update-admin-container { padding: 16px 12px 40px; }
+    .update-admin-header h1 { font-size: 22px; }
+    .status-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+    .action-grid { grid-template-columns: 1fr; }
+    .update-tabs { flex-wrap: nowrap; overflow-x: auto; }
+    .git-commit { flex-direction: column; align-items: flex-start; gap: 4px; }
+    .disk-grid { grid-template-columns: repeat(2, 1fr); }
+}

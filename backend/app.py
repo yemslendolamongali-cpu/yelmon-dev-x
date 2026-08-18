@@ -81,6 +81,11 @@ from models import CodeGenerator
 from models.intent import detect_intent
 from agent import YelmonAgent
 from tokenizer import count_tokens
+from updater import (
+    get_update_status, build_frontend, deploy_render, pull_updates,
+    full_update, run_background, get_git_log, get_disk_usage,
+    create_backup, list_backups,
+)
 
 app = Flask(__name__, static_folder=None)
 app.config["SECRET_KEY"] = JWT_SECRET
@@ -540,6 +545,104 @@ def stats():
         "languages": langs,
         "uptime": time.time() - app_start_time,
     })
+
+
+# ---------------------------------------------------------------------------
+# Admin — Mise à jour automatique & Gestion du déploiement
+# ---------------------------------------------------------------------------
+
+def _require_admin():
+    """Vérifie que l'utilisateur est admin via le token JWT."""
+    auth = request.headers.get("Authorization", "")
+    if not auth.startswith("Bearer "):
+        return None
+    data = decode_token(auth[7:], JWT_SECRET)
+    if not data:
+        return None
+    username = data.get("username", "")
+    users = _read_json(USERS_FILE, {})
+    u = users.get(username, {})
+    if u.get("role") != "admin" and username not in ("yems", "01yem's"):
+        return None
+    return username
+
+
+@app.route("/api/admin/update/status")
+def admin_update_status():
+    admin = _require_admin()
+    if not admin:
+        return jsonify({"error": "Accès refusé"}), 403
+    return jsonify(get_update_status())
+
+
+@app.route("/api/admin/update/build", methods=["POST"])
+def admin_update_build():
+    admin = _require_admin()
+    if not admin:
+        return jsonify({"error": "Accès refusé"}), 403
+    ok = run_background(build_frontend)
+    return jsonify({"ok": ok, "message": "Build frontend lancé en arrière-plan"})
+
+
+@app.route("/api/admin/update/deploy", methods=["POST"])
+def admin_update_deploy():
+    admin = _require_admin()
+    if not admin:
+        return jsonify({"error": "Accès refusé"}), 403
+    ok = run_background(deploy_render)
+    return jsonify({"ok": ok, "message": "Déploiement lancé en arrière-plan"})
+
+
+@app.route("/api/admin/update/pull", methods=["POST"])
+def admin_update_pull():
+    admin = _require_admin()
+    if not admin:
+        return jsonify({"error": "Accès refusé"}), 403
+    ok = run_background(pull_updates)
+    return jsonify({"ok": ok, "message": "Pull des mises à jour lancé"})
+
+
+@app.route("/api/admin/update/full", methods=["POST"])
+def admin_update_full():
+    admin = _require_admin()
+    if not admin:
+        return jsonify({"error": "Accès refusé"}), 403
+    ok = run_background(full_update)
+    return jsonify({"ok": ok, "message": "Mise à jour complète lancée (pull + build + deploy)"})
+
+
+@app.route("/api/admin/update/backup", methods=["POST"])
+def admin_update_backup():
+    admin = _require_admin()
+    if not admin:
+        return jsonify({"error": "Accès refusé"}), 403
+    ok, result = create_backup()
+    return jsonify({"ok": ok, **result})
+
+
+@app.route("/api/admin/update/backups")
+def admin_update_backups():
+    admin = _require_admin()
+    if not admin:
+        return jsonify({"error": "Accès refusé"}), 403
+    return jsonify({"backups": list_backups()})
+
+
+@app.route("/api/admin/update/git-log")
+def admin_update_git_log():
+    admin = _require_admin()
+    if not admin:
+        return jsonify({"error": "Accès refusé"}), 403
+    limit = request.args.get("limit", 20, type=int)
+    return jsonify({"commits": get_git_log(limit)})
+
+
+@app.route("/api/admin/update/disk")
+def admin_update_disk():
+    admin = _require_admin()
+    if not admin:
+        return jsonify({"error": "Accès refusé"}), 403
+    return jsonify(get_disk_usage())
 
 
 # ---------------------------------------------------------------------------
