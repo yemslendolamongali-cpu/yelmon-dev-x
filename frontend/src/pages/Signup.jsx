@@ -9,6 +9,8 @@ function Signup() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [password2, setPassword2] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword2, setShowPassword2] = useState(false);
     const [email, setEmail] = useState('');
     const [phone, setPhone] = useState('');
     const [displayName, setDisplayName] = useState('');
@@ -104,24 +106,44 @@ function Signup() {
 
                     <div className="auth-field">
                         <label>Mot de passe *</label>
-                        <input
-                            type="password"
-                            placeholder="••••••••"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required
-                        />
+                        <div className="password-wrapper">
+                            <input
+                                type={showPassword ? 'text' : 'password'}
+                                placeholder="••••••••"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={() => setShowPassword(!showPassword)}
+                                tabIndex={-1}
+                            >
+                                {showPassword ? '🙈' : '👁'}
+                            </button>
+                        </div>
                     </div>
 
                     <div className="auth-field">
                         <label>Confirmer le mot de passe *</label>
-                        <input
-                            type="password"
-                            placeholder="••••••••"
-                            value={password2}
-                            onChange={(e) => setPassword2(e.target.value)}
-                            required
-                        />
+                        <div className="password-wrapper">
+                            <input
+                                type={showPassword2 ? 'text' : 'password'}
+                                placeholder="••••••••"
+                                value={password2}
+                                onChange={(e) => setPassword2(e.target.value)}
+                                required
+                            />
+                            <button
+                                type="button"
+                                className="password-toggle"
+                                onClick={() => setShowPassword2(!showPassword2)}
+                                tabIndex={-1}
+                            >
+                                {showPassword2 ? '🙈' : '👁'}
+                            </button>
+                        </div>
                     </div>
 
                     <button type="submit" className="auth-btn" disabled={loading}>
