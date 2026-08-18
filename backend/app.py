@@ -88,6 +88,7 @@ from updater import (
     full_update, run_background, get_git_log, get_disk_usage,
     create_backup, list_backups,
 )
+from code_analyzer import analyze_code
 
 app = Flask(__name__, static_folder=None)
 app.config["SECRET_KEY"] = JWT_SECRET
@@ -501,6 +502,20 @@ def analyze():
         return jsonify({"error": "Code vide"}), 400
     analysis = agent.analyze(code)
     return jsonify(analysis)
+
+
+@app.route("/api/code/check", methods=["POST"])
+def code_check():
+    """Analyse avancée : détecte les erreurs réelles, signale leur position,
+    et corrige automatiquement le code."""
+    data = request.get_json(silent=True) or {}
+    code = str(data.get("code", ""))
+    language = str(data.get("language", "auto")).strip().lower()
+    fix = bool(data.get("fix", False))
+    if not code.strip():
+        return jsonify({"error": "Code vide"}), 400
+    result = analyze_code(code, language, fix)
+    return jsonify(result)
 
 
 @app.route("/api/chat", methods=["POST"])

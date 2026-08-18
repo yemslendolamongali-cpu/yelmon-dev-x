@@ -252,6 +252,10 @@ function Dashboard() {
                         <span className="nav-icon">🖥</span>
                         Backend
                     </div>
+                    <div className="nav-item" onClick={() => navigate('/analyze')}>
+                        <span className="nav-icon">🔬</span>
+                        Analyseur
+                    </div>
                     <div className="nav-item" onClick={() => navigate('/update-admin')}>
                         <span className="nav-icon">🔄</span>
                         Mise à jour
