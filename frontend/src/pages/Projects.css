@@ -316,3 +316,106 @@
     .modal-row { grid-template-columns: 1fr; }
     .projects-modal { margin: 16px; }
 }
+
+/* Code badge on cards */
+.card-code-preview {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 10px;
+    background: rgba(74,222,128,0.08);
+    border: 1px solid rgba(74,222,128,0.2);
+    border-radius: 6px;
+    margin-bottom: 10px;
+}
+.code-badge {
+    font-size: 12px;
+    font-weight: 600;
+    color: #4ade80;
+}
+.code-lines {
+    font-size: 11px;
+    color: var(--text-muted);
+}
+
+/* View button */
+.card-btn.view {
+    background: rgba(59,130,246,0.15);
+    color: #3b82f6;
+}
+.card-btn.view:hover { background: rgba(59,130,246,0.25); }
+
+/* Code viewer page */
+.project-code-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--text-muted);
+}
+.code-prompt-badge {
+    background: rgba(168,85,247,0.12);
+    color: #a855f7;
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.project-code-viewer {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+}
+.code-viewer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 16px;
+    background: var(--bg-tertiary);
+    border-bottom: 1px solid var(--border);
+}
+.code-viewer-lang {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--accent);
+    text-transform: uppercase;
+}
+.code-viewer-lines {
+    font-size: 12px;
+    color: var(--text-muted);
+}
+.code-viewer-content {
+    padding: 18px;
+    font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-primary);
+    white-space: pre-wrap;
+    margin: 0;
+    max-height: 500px;
+    overflow-y: auto;
+}
+
+.project-code-empty {
+    text-align: center;
+    padding: 60px 20px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+}
+.project-code-empty .empty-icon { font-size: 48px; margin-bottom: 12px; }
+.project-code-empty h3 { margin: 0 0 8px; color: var(--text-primary); }
+.project-code-empty p { color: var(--text-muted); font-size: 14px; margin: 0 0 16px; }
+.project-code-empty .empty-btn {
+    padding: 10px 22px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-weight: 700;
+    cursor: pointer;
+}

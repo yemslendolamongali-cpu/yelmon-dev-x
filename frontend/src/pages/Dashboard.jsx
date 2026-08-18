@@ -77,6 +77,12 @@ function Dashboard() {
     const [sidebarOpen, setSidebarOpen] = useState(false);
     const [mobileTab, setMobileTab] = useState('chat');
 
+    // Save to project
+    const [showSaveModal, setShowSaveModal] = useState(false);
+    const [projects, setProjects] = useState([]);
+    const [selectedProjectId, setSelectedProjectId] = useState('');
+    const [saveStatus, setSaveStatus] = useState('');
+
     const activeConv = conversations.find(c => c.id === activeConvId);
     const messages = activeConv ? activeConv.messages : [];
 
@@ -197,6 +203,44 @@ function Dashboard() {
             setOutput(" Erreur d'exécution.");
         }
     };
+
+    const loadProjectsList = () => {
+        try {
+            const saved = localStorage.getItem('yelmon_projects');
+            setProjects(saved ? JSON.parse(saved) : []);
+        } catch { setProjects([]); }
+    };
+
+    const openSaveModal = () => {
+        loadProjectsList();
+        setShowSaveModal(true);
+        setSaveStatus('');
+    };
+
+    const saveToProject = () => {
+        if (!selectedProjectId || !code.trim()) return;
+        const saved = JSON.parse(localStorage.getItem('yelmon_projects') || '[]');
+        const updated = saved.map(p => {
+            if (p.id === selectedProjectId) {
+                return {
+                    ...p,
+                    generated_code: code,
+                    generated_prompt: prompt || lastPrompt,
+                    language,
+                    updated_at: new Date().toISOString(),
+                };
+            }
+            return p;
+        });
+        localStorage.setItem('yelmon_projects', JSON.stringify(updated));
+        setSaveStatus('ok');
+        setTimeout(() => { setShowSaveModal(false); setSaveStatus(''); }, 1500);
+    };
+
+    const lastPrompt = (() => {
+        const lastUser = [...messages].reverse().find(m => m.role === 'user');
+        return lastUser?.content || '';
+    })();
 
     const handleSendMessage = () => {
         if (!prompt.trim()) return;
@@ -473,8 +517,49 @@ function Dashboard() {
                 <div className="code-actions">
                     <button className="action-btn primary" onClick={executeCode}>Exécuter</button>
                     <button className="action-btn ghost" onClick={() => navigator.clipboard.writeText(code)}>Copier</button>
+                    <button className="action-btn ghost" onClick={openSaveModal} style={{ color: '#4ade80' }}>💾 Sauver dans un projet</button>
                 </div>
             </aside>
+
+            {/* SAVE TO PROJECT MODAL */}
+            {showSaveModal && (
+                <div className="projects-modal-overlay" onClick={() => setShowSaveModal(false)}>
+                    <div className="projects-modal" onClick={(e) => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2>Sauver le code dans un projet</h2>
+                            <button className="modal-close" onClick={() => setShowSaveModal(false)}>✕</button>
+                        </div>
+                        <div className="modal-body">
+                            {projects.length === 0 ? (
+                                <p style={{ color: '#8a7aaa', textAlign: 'center', padding: 20 }}>
+                                    Aucun projet. Créez un projet d'abord.
+                                </p>
+                            ) : (
+                                <div className="modal-field">
+                                    <label>Sélectionner un projet</label>
+                                    <select value={selectedProjectId} onChange={(e) => setSelectedProjectId(e.target.value)}>
+                                        <option value="">-- Choisir un projet --</option>
+                                        {projects.filter(p => p.status === 'active').map(p => (
+                                            <option key={p.id} value={p.id}>{p.name} ({p.language})</option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+                            {saveStatus === 'ok' && (
+                                <p style={{ color: '#4ade80', textAlign: 'center', padding: 10, fontWeight: 700 }}>
+                                    ✅ Code sauvegardé avec succès !
+                                </p>
+                            )}
+                        </div>
+                        <div className="modal-footer">
+                            <button className="modal-btn cancel" onClick={() => setShowSaveModal(false)}>Annuler</button>
+                            <button className="modal-btn create" onClick={saveToProject} disabled={!selectedProjectId || saveStatus === 'ok'}>
+                                Sauvegarder
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             {/* MOBILE BOTTOM NAV */}
             <nav className="mobile-bottom-nav">

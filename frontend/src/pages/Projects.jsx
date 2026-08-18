@@ -14,6 +14,8 @@ function Projects() {
     const [newType, setNewType] = useState('api');
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState('all');
+    const [viewingProject, setViewingProject] = useState(null);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         loadProjects();
@@ -44,6 +46,8 @@ function Projects() {
             updated_at: new Date().toISOString(),
             author: user?.username || 'unknown',
             files: [],
+            generated_code: '',
+            generated_prompt: '',
             status: 'active',
         };
         const updated = [project, ...projects];
@@ -57,11 +61,25 @@ function Projects() {
     const handleDelete = (id) => {
         const updated = projects.filter(p => p.id !== id);
         saveProjects(updated);
+        if (viewingProject?.id === id) setViewingProject(null);
     };
 
     const handleStatus = (id, status) => {
         const updated = projects.map(p => p.id === id ? { ...p, status } : p);
         saveProjects(updated);
+        if (viewingProject?.id === id) setViewingProject({ ...viewingProject, status });
+    };
+
+    const viewCode = (project) => {
+        setViewingProject(project);
+    };
+
+    const copyCode = () => {
+        if (viewingProject?.generated_code) {
+            navigator.clipboard.writeText(viewingProject.generated_code);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        }
     };
 
     const filtered = filter === 'all' ? projects : projects.filter(p => p.status === filter);
@@ -73,6 +91,62 @@ function Projects() {
         const d = new Date(iso);
         return d.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: 'numeric' });
     };
+
+    // Code viewer overlay
+    if (viewingProject) {
+        return (
+            <div className="projects-page">
+                <div className="projects-container">
+                    <button onClick={() => setViewingProject(null)} className="projects-back">
+                        ← Retour aux projets
+                    </button>
+
+                    <div className="projects-header">
+                        <div>
+                            <h1>{viewingProject.name}</h1>
+                            <p className="projects-subtitle">
+                                {viewingProject.description || 'Projet sans description'}
+                            </p>
+                        </div>
+                        <div style={{ display: 'flex', gap: 10 }}>
+                            <button className="projects-create-btn" onClick={copyCode}>
+                                {copied ? '✅ Copié !' : '📋 Copier le code'}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="project-code-meta">
+                        <span className="card-lang">{langIcons[viewingProject.language] || '?'}</span>
+                        <span className="card-type">{typeLabels[viewingProject.type] || viewingProject.type}</span>
+                        <span>Créé le {formatDate(viewingProject.created_at)}</span>
+                        <span>par {viewingProject.author}</span>
+                        {viewingProject.generated_prompt && (
+                            <span className="code-prompt-badge">Prompt: {viewingProject.generated_prompt}</span>
+                        )}
+                    </div>
+
+                    {viewingProject.generated_code ? (
+                        <div className="project-code-viewer">
+                            <div className="code-viewer-header">
+                                <span className="code-viewer-lang">{viewingProject.language}</span>
+                                <span className="code-viewer-lines">{viewingProject.generated_code.split('\n').length} lignes</span>
+                            </div>
+                            <pre className="code-viewer-content">{viewingProject.generated_code}</pre>
+                        </div>
+                    ) : (
+                        <div className="project-code-empty">
+                            <div className="empty-icon">📝</div>
+                            <h3>Aucun code généré</h3>
+                            <p>Allez dans le Dashboard pour générer du code, puis sauvegardez-le dans ce projet.</p>
+                            <button className="empty-btn" onClick={() => navigate('/')}>
+                                Aller au Dashboard
+                            </button>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="projects-page">
@@ -204,11 +278,20 @@ function Projects() {
                                 {project.description && (
                                     <p className="card-desc">{project.description}</p>
                                 )}
+                                {project.generated_code && (
+                                    <div className="card-code-preview">
+                                        <span className="code-badge">📝 Code généré</span>
+                                        <span className="code-lines">{project.generated_code.split('\n').length} lignes</span>
+                                    </div>
+                                )}
                                 <div className="card-meta">
                                     <span>Créé le {formatDate(project.created_at)}</span>
                                     <span>par {project.author}</span>
                                 </div>
                                 <div className="card-actions">
+                                    <button className="card-btn view" onClick={() => viewCode(project)}>
+                                        {project.generated_code ? '👁 Voir le code' : '👁 Ouvrir'}
+                                    </button>
                                     {project.status === 'active' ? (
                                         <button className="card-btn archive" onClick={() => handleStatus(project.id, 'archived')}>
                                             Archiver
