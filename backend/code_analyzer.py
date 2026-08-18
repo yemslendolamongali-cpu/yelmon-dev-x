@@ -119,6 +119,14 @@ def _auto_fix_python(code: str) -> str:
     for pattern, replacement in _PY_FIXES:
         fixed = re.sub(pattern, replacement, fixed, flags=re.M)
 
+    # Ajouter les deux-points manquants après def, class, if, elif, else, for, while, try, except, finally, with
+    fixed = re.sub(
+        r"^(\s*(?:def|class|if|elif|else|for|while|try|except|finally|with|async for|async with)\b[^:#]*[^\s:,#])\s*$",
+        lambda m: m.group(1).rstrip() + ":",
+        fixed,
+        flags=re.M,
+    )
+
     # Corriger indentation cassée
     lines = fixed.split("\n")
     result = []
