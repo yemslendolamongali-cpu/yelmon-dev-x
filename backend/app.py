@@ -82,7 +82,7 @@ from models.intent import detect_intent
 from agent import YelmonAgent
 from tokenizer import count_tokens
 
-app = Flask(__name__, static_folder=str(BUILD_DIR), static_url_path="")
+app = Flask(__name__, static_folder=None)
 app.config["SECRET_KEY"] = JWT_SECRET
 app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
 
