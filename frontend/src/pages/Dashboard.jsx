@@ -256,6 +256,10 @@ function Dashboard() {
                         <span className="nav-icon">🔬</span>
                         Analyseur
                     </div>
+                    <div className="nav-item" onClick={() => navigate('/system-admin')}>
+                        <span className="nav-icon">🛠</span>
+                        Système
+                    </div>
                     <div className="nav-item" onClick={() => navigate('/update-admin')}>
                         <span className="nav-icon">🔄</span>
                         Mise à jour

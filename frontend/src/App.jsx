@@ -18,6 +18,7 @@ import Contact from './pages/Contact';
 import BackendDev from './pages/BackendDev';
 import UpdateAdmin from './pages/UpdateAdmin';
 import CodeAnalyzer from './pages/CodeAnalyzer';
+import SystemAdmin from './pages/SystemAdmin';
 
 function ProtectedRoute({ children }) {
     const { user, loading } = useAuth();
@@ -61,6 +62,7 @@ function App() {
                     <Route path="/backend-dev" element={<ProtectedRoute><BackendDev /></ProtectedRoute>} />
                     <Route path="/update-admin" element={<ProtectedRoute><UpdateAdmin /></ProtectedRoute>} />
                     <Route path="/analyze" element={<ProtectedRoute><CodeAnalyzer /></ProtectedRoute>} />
+                    <Route path="/system-admin" element={<ProtectedRoute><SystemAdmin /></ProtectedRoute>} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </div>

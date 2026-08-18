@@ -89,6 +89,11 @@ from updater import (
     create_backup, list_backups,
 )
 from code_analyzer import analyze_code
+from system_admin import (
+    get_system_summary, get_environment, get_listening_ports,
+    get_processes, build_frontend_local, install_deps_local,
+    create_full_backup, list_backups_local, get_reconstruction_scripts,
+)
 
 app = Flask(__name__, static_folder=None)
 app.config["SECRET_KEY"] = JWT_SECRET
@@ -516,6 +521,58 @@ def code_check():
         return jsonify({"error": "Code vide"}), 400
     result = analyze_code(code, language, fix)
     return jsonify(result)
+
+
+# ---------------------------------------------------------------------------
+# System Admin — merged from reconstruction scripts
+# ---------------------------------------------------------------------------
+
+@app.route("/api/system/summary")
+def system_summary():
+    return jsonify(get_system_summary())
+
+
+@app.route("/api/system/env")
+def system_env():
+    return jsonify(get_environment())
+
+
+@app.route("/api/system/ports")
+def system_ports():
+    return jsonify(get_listening_ports())
+
+
+@app.route("/api/system/processes")
+def system_processes():
+    return jsonify(get_processes())
+
+
+@app.route("/api/system/scripts")
+def system_scripts():
+    return jsonify(get_reconstruction_scripts())
+
+
+@app.route("/api/system/build-frontend", methods=["POST"])
+def system_build_frontend():
+    result = build_frontend_local()
+    return jsonify(result)
+
+
+@app.route("/api/system/install-deps", methods=["POST"])
+def system_install_deps():
+    result = install_deps_local()
+    return jsonify(result)
+
+
+@app.route("/api/system/backup", methods=["POST"])
+def system_backup():
+    result = create_full_backup()
+    return jsonify(result)
+
+
+@app.route("/api/system/backups")
+def system_backups():
+    return jsonify(list_backups_local())
 
 
 @app.route("/api/chat", methods=["POST"])
