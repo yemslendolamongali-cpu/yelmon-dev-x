@@ -25,11 +25,15 @@ function Contact() {
     const [sent, setSent] = useState(false);
     const [error, setError] = useState('');
 
-    // Admin inbox state
-    const [tab, setTab] = useState(isAdmin ? 'inbox' : 'send');
+    // Tab state
+    const [tab, setTab] = useState(isAdmin ? 'inbox' : 'inbox');
+
+    // Inbox state (admin + user)
     const [messages, setMessages] = useState([]);
     const [loadingMessages, setLoadingMessages] = useState(false);
     const [selectedMsg, setSelectedMsg] = useState(null);
+
+    // Admin reply state
     const [replyText, setReplyText] = useState('');
     const [replying, setReplying] = useState(false);
     const [replySent, setReplySent] = useState(false);
@@ -38,18 +42,19 @@ function Contact() {
         setLoadingMessages(true);
         try {
             const token = localStorage.getItem('yelmon_token');
-            const r = await fetch(`${API}/api/contact`, {
+            const url = isAdmin ? `${API}/api/contact` : `${API}/api/contact/my`;
+            const r = await fetch(url, {
                 headers: token ? { Authorization: `Bearer ${token}` } : {},
             });
             const d = await r.json();
             setMessages(d.messages || []);
         } catch { setMessages([]); }
         setLoadingMessages(false);
-    }, []);
+    }, [isAdmin]);
 
     useEffect(() => {
-        if (isAdmin) loadMessages();
-    }, [isAdmin, loadMessages]);
+        loadMessages();
+    }, [loadMessages]);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -76,10 +81,9 @@ function Contact() {
             const data = await res.json();
             if (res.ok && data.ok) {
                 setSent(true);
-                setName('');
-                setEmail('');
                 setSubject('');
                 setMessage('');
+                loadMessages();
             } else {
                 setError(data.error || 'Une erreur est survenue.');
             }
@@ -116,7 +120,8 @@ function Contact() {
 
     const markRead = async (msgId) => {
         const token = localStorage.getItem('yelmon_token');
-        await fetch(`${API}/api/contact/${msgId}/read`, {
+        const endpoint = isAdmin ? 'read' : 'user-read';
+        await fetch(`${API}/api/contact/${msgId}/${endpoint}`, {
             method: 'POST',
             headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
@@ -142,6 +147,7 @@ function Contact() {
 
     const subjectLabels = { bug: 'Bug', feature: 'Suggestion', question: 'Question', feedback: 'Feedback', collaboration: 'Collaboration', other: 'Autre' };
     const unread = messages.filter(m => !m.read).length;
+    const unreadUser = messages.filter(m => m.reply && !m.user_read).length;
 
     // ─── Admin Inbox ───
     if (isAdmin) {
@@ -250,7 +256,6 @@ function Contact() {
                             </div>
                         </div>
                     ) : (
-                        /* Admin also has the send form */
                         <div className="contact-grid">
                             <div className="contact-form-card">
                                 <h2>Envoyer un message</h2>
@@ -327,89 +332,171 @@ function Contact() {
                     <div className="contact-header-icon">✉</div>
                     <h1>Contacter le créateur</h1>
                     <p className="contact-subtitle">
-                        Une question, un bug, une suggestion ? Envoyez un message directement à l'équipe YELMON.
+                        Une question, un bug, une suggestion ? Envoyez un message et consultez les réponses.
                     </p>
                 </div>
 
-                <div className="contact-grid">
-                    <div className="contact-form-card">
-                        <h2>Envoyer un message</h2>
-                        {sent ? (
-                            <div className="contact-success">
-                                <div className="success-icon">✓</div>
-                                <h3>Message envoyé !</h3>
-                                <p>Merci pour votre message. Le créateur vous répondra dès que possible.</p>
-                                <button className="success-btn" onClick={() => setSent(false)}>Envoyer un autre message</button>
-                            </div>
-                        ) : (
-                            <form onSubmit={handleSubmit}>
-                                {error && <div className="contact-error">{error}</div>}
-                                <div className="field">
-                                    <label>Nom *</label>
-                                    <input type="text" placeholder="Votre nom" value={name} onChange={(e) => setName(e.target.value)} required />
-                                </div>
-                                <div className="field">
-                                    <label>Email *</label>
-                                    <input type="email" placeholder="votre@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                                </div>
-                                <div className="field">
-                                    <label>Sujet *</label>
-                                    <select value={subject} onChange={(e) => setSubject(e.target.value)} required>
-                                        <option value="">Choisir un sujet...</option>
-                                        <option value="bug">Signaler un bug</option>
-                                        <option value="feature">Suggestion de fonctionnalité</option>
-                                        <option value="question">Question</option>
-                                        <option value="feedback">Feedback / Avis</option>
-                                        <option value="collaboration">Collaboration</option>
-                                        <option value="other">Autre</option>
-                                    </select>
-                                </div>
-                                <div className="field">
-                                    <label>Message *</label>
-                                    <textarea placeholder="Décrivez votre demande en détail..." value={message} onChange={(e) => setMessage(e.target.value)} rows={6} required />
-                                </div>
-                                <button type="submit" className="contact-submit" disabled={sending}>
-                                    {sending ? 'Envoi en cours...' : 'Envoyer le message'}
-                                </button>
-                            </form>
-                        )}
-                    </div>
-
-                    <div className="contact-info-card">
-                        <h2>Infos de contact</h2>
-                        <div className="info-item">
-                            <span className="info-icon">📧</span>
-                            <div>
-                                <span className="info-label">Email</span>
-                                <a href={`mailto:${CREATOR_EMAIL}`} className="info-value link">{CREATOR_EMAIL}</a>
-                            </div>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-icon">🌍</span>
-                            <div>
-                                <span className="info-label">Localisation</span>
-                                <span className="info-value">Kinshasa, RDC</span>
-                            </div>
-                        </div>
-                        <div className="info-item">
-                            <span className="info-icon">⏱</span>
-                            <div>
-                                <span className="info-label">Temps de réponse</span>
-                                <span className="info-value">24 – 72 heures</span>
-                            </div>
-                        </div>
-                        <div className="info-divider"></div>
-                        <h3>Liens utiles</h3>
-                        <div className="info-links">
-                            <a href="https://github.com/yemsgithub" target="_blank" rel="noopener noreferrer" className="info-link">GitHub</a>
-                            <a href={`mailto:${CREATOR_EMAIL}`} className="info-link">Email direct</a>
-                        </div>
-                        <div className="info-divider"></div>
-                        <div className="info-note">
-                            <p>Merci de ne pas envoyer de données sensibles (mots de passe, clés API…) via ce formulaire.</p>
-                        </div>
-                    </div>
+                <div className="admin-tabs">
+                    <button className={`admin-tab ${tab === 'inbox' ? 'active' : ''}`} onClick={() => { setTab('inbox'); loadMessages(); }}>
+                        📨 Mes messages {unreadUser > 0 && <span className="unread-badge">{unreadUser}</span>}
+                    </button>
+                    <button className={`admin-tab ${tab === 'send' ? 'active' : ''}`} onClick={() => setTab('send')}>
+                        ✉ Nouveau message
+                    </button>
                 </div>
+
+                {tab === 'inbox' ? (
+                    <div className="inbox-layout">
+                        <div className="inbox-list">
+                            {loadingMessages ? (
+                                <p className="inbox-empty">Chargement...</p>
+                            ) : messages.length === 0 ? (
+                                <div className="inbox-empty">
+                                    <div className="empty-icon">📭</div>
+                                    <p>Aucun message envoyé</p>
+                                    <p className="inbox-empty-hint">Envoyez un message pour voir les réponses ici</p>
+                                </div>
+                            ) : (
+                                messages.map(m => (
+                                    <div
+                                        key={m.id}
+                                        className={`inbox-item ${m.reply && !m.user_read ? 'unread' : ''} ${selectedMsg?.id === m.id ? 'selected' : ''}`}
+                                        onClick={() => { setSelectedMsg(m); if (m.reply && !m.user_read) markRead(m.id); }}
+                                    >
+                                        <div className="inbox-item-top">
+                                            <span className="inbox-from">{subjectLabels[m.subject] || m.subject}</span>
+                                            <span className="inbox-time">{formatDate(m.timestamp)}</span>
+                                        </div>
+                                        <div className="inbox-preview">{m.message.slice(0, 80)}...</div>
+                                        {m.reply ? (
+                                            <div className="inbox-replied-badge">💬 Réponse de l'admin</div>
+                                        ) : (
+                                            <div className="inbox-pending-badge">⏳ En attente de réponse</div>
+                                        )}
+                                        {m.reply && !m.user_read && <div className="inbox-unread-dot" />}
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        <div className="inbox-detail">
+                            {selectedMsg ? (
+                                <>
+                                    <div className="detail-header">
+                                        <div>
+                                            <h3>Votre message</h3>
+                                            <span className="detail-date">{formatDate(selectedMsg.timestamp)}</span>
+                                        </div>
+                                    </div>
+                                    <div className="detail-meta">
+                                        <span className={`detail-subject ${selectedMsg.subject}`}>{subjectLabels[selectedMsg.subject] || selectedMsg.subject}</span>
+                                    </div>
+                                    <div className="detail-message">{selectedMsg.message}</div>
+
+                                    {selectedMsg.reply ? (
+                                        <div className="detail-reply-box user-reply">
+                                            <div className="reply-label">💬 Réponse de l'administrateur :</div>
+                                            <p>{selectedMsg.reply}</p>
+                                            <span className="reply-date">Reçu le {formatDate(selectedMsg.replied_at)}</span>
+                                        </div>
+                                    ) : (
+                                        <div className="detail-pending-box">
+                                            <div className="pending-icon">⏳</div>
+                                            <p>En attente de réponse de l'administrateur...</p>
+                                            <p className="pending-sub">Le créateur vous répondra dès que possible.</p>
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <div className="inbox-empty">
+                                    <div className="empty-icon">👈</div>
+                                    <p>Sélectionnez un message pour le lire</p>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="contact-grid">
+                        <div className="contact-form-card">
+                            <h2>Envoyer un message</h2>
+                            {sent ? (
+                                <div className="contact-success">
+                                    <div className="success-icon">✓</div>
+                                    <h3>Message envoyé !</h3>
+                                    <p>Merci pour votre message. Le créateur vous répondra dès que possible.</p>
+                                    <p className="success-hint">Vous verrez la réponse dans l'onglet "📨 Mes messages".</p>
+                                    <button className="success-btn" onClick={() => setSent(false)}>Envoyer un autre message</button>
+                                </div>
+                            ) : (
+                                <form onSubmit={handleSubmit}>
+                                    {error && <div className="contact-error">{error}</div>}
+                                    <div className="field">
+                                        <label>Nom *</label>
+                                        <input type="text" placeholder="Votre nom" value={name} onChange={(e) => setName(e.target.value)} required />
+                                    </div>
+                                    <div className="field">
+                                        <label>Email *</label>
+                                        <input type="email" placeholder="votre@email.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+                                    </div>
+                                    <div className="field">
+                                        <label>Sujet *</label>
+                                        <select value={subject} onChange={(e) => setSubject(e.target.value)} required>
+                                            <option value="">Choisir un sujet...</option>
+                                            <option value="bug">Signaler un bug</option>
+                                            <option value="feature">Suggestion de fonctionnalité</option>
+                                            <option value="question">Question</option>
+                                            <option value="feedback">Feedback / Avis</option>
+                                            <option value="collaboration">Collaboration</option>
+                                            <option value="other">Autre</option>
+                                        </select>
+                                    </div>
+                                    <div className="field">
+                                        <label>Message *</label>
+                                        <textarea placeholder="Décrivez votre demande en détail..." value={message} onChange={(e) => setMessage(e.target.value)} rows={6} required />
+                                    </div>
+                                    <button type="submit" className="contact-submit" disabled={sending}>
+                                        {sending ? 'Envoi en cours...' : 'Envoyer le message'}
+                                    </button>
+                                </form>
+                            )}
+                        </div>
+
+                        <div className="contact-info-card">
+                            <h2>Infos de contact</h2>
+                            <div className="info-item">
+                                <span className="info-icon">📧</span>
+                                <div>
+                                    <span className="info-label">Email</span>
+                                    <a href={`mailto:${CREATOR_EMAIL}`} className="info-value link">{CREATOR_EMAIL}</a>
+                                </div>
+                            </div>
+                            <div className="info-item">
+                                <span className="info-icon">🌍</span>
+                                <div>
+                                    <span className="info-label">Localisation</span>
+                                    <span className="info-value">Kinshasa, RDC</span>
+                                </div>
+                            </div>
+                            <div className="info-item">
+                                <span className="info-icon">⏱</span>
+                                <div>
+                                    <span className="info-label">Temps de réponse</span>
+                                    <span className="info-value">24 – 72 heures</span>
+                                </div>
+                            </div>
+                            <div className="info-divider"></div>
+                            <h3>Liens utiles</h3>
+                            <div className="info-links">
+                                <a href="https://github.com/yemsgithub" target="_blank" rel="noopener noreferrer" className="info-link">GitHub</a>
+                                <a href={`mailto:${CREATOR_EMAIL}`} className="info-link">Email direct</a>
+                            </div>
+                            <div className="info-divider"></div>
+                            <div className="info-note">
+                                <p>Merci de ne pas envoyer de données sensibles (mots de passe, clés API…) via ce formulaire.</p>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </div>
     );

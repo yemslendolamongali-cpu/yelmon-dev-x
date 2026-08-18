@@ -902,14 +902,23 @@ def contact():
     if not name or not email or not subject or not message:
         return jsonify({"error": "Tous les champs sont requis"}), 400
 
+    username = "anonymous"
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        payload = decode_token(auth_header.split(" ", 1)[1])
+        if payload:
+            username = payload.get("sub", "anonymous")
+
     entry = {
         "id": str(uuid.uuid4()),
+        "username": username,
         "name": name,
         "email": email,
         "subject": subject,
         "message": message,
         "timestamp": int(time.time() * 1000),
         "read": False,
+        "user_read": False,
         "reply": None,
         "replied_at": None,
     }
@@ -927,6 +936,21 @@ def contact():
 def list_contacts():
     messages = _read_json(CONTACT_FILE, [])
     return jsonify({"messages": messages if isinstance(messages, list) else []})
+
+
+@app.route("/api/contact/my", methods=["GET"])
+def list_my_contacts():
+    username = "anonymous"
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        payload = decode_token(auth_header.split(" ", 1)[1])
+        if payload:
+            username = payload.get("sub", "anonymous")
+    messages = _read_json(CONTACT_FILE, [])
+    if not isinstance(messages, list):
+        messages = []
+    my_messages = [m for m in messages if m.get("username") == username]
+    return jsonify({"messages": my_messages})
 
 
 @app.route("/api/contact/<contact_id>", methods=["DELETE"])
@@ -951,6 +975,7 @@ def reply_contact(contact_id):
             m["reply"] = reply_text
             m["replied_at"] = int(time.time() * 1000)
             m["read"] = True
+            m["user_read"] = False
             _write_json(CONTACT_FILE, messages)
             return jsonify({"ok": True, "message": "Réponse envoyée"})
     return jsonify({"error": "Message non trouvé"}), 404
@@ -964,6 +989,19 @@ def mark_read_contact(contact_id):
     for m in messages:
         if m.get("id") == contact_id:
             m["read"] = True
+            _write_json(CONTACT_FILE, messages)
+            return jsonify({"ok": True})
+    return jsonify({"error": "Message non trouvé"}), 404
+
+
+@app.route("/api/contact/<contact_id>/user-read", methods=["POST"])
+def mark_user_read_contact(contact_id):
+    messages = _read_json(CONTACT_FILE, [])
+    if not isinstance(messages, list):
+        return jsonify({"error": "Aucun message"}), 404
+    for m in messages:
+        if m.get("id") == contact_id:
+            m["user_read"] = True
             _write_json(CONTACT_FILE, messages)
             return jsonify({"ok": True})
     return jsonify({"error": "Message non trouvé"}), 404

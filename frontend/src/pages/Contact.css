@@ -538,3 +538,48 @@
     font-weight: 700;
     font-size: 14px;
 }
+
+/* ─── User Inbox ─── */
+.inbox-pending-badge {
+    font-size: 11px;
+    color: #fbbf24;
+    margin-top: 4px;
+    font-weight: 600;
+}
+.inbox-empty-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 4px;
+}
+.success-hint {
+    font-size: 12px;
+    color: var(--accent-pink);
+    margin-top: 4px;
+}
+.detail-reply-box.user-reply {
+    background: rgba(59,130,246,0.06);
+    border: 1px solid rgba(59,130,246,0.25);
+}
+.detail-reply-box.user-reply .reply-label {
+    color: #3b82f6;
+}
+.detail-pending-box {
+    background: var(--tag-bg);
+    border: 1px dashed var(--panel-border);
+    border-radius: 10px;
+    padding: 30px;
+    text-align: center;
+    color: var(--text-muted);
+}
+.detail-pending-box .pending-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+.detail-pending-box p {
+    margin: 4px 0;
+    font-size: 14px;
+}
+.detail-pending-box .pending-sub {
+    font-size: 12px;
+    color: var(--text-muted);
+}
