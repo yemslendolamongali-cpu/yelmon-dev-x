@@ -44,6 +44,7 @@ USERS_FILE = DATA_DIR / "users.json"
 STATS_FILE = DATA_DIR / "stats.json"
 CONTACT_FILE = DATA_DIR / "contact.json"
 USER_BACKUPS_FILE = DATA_DIR / "user_backups.json"
+MAINPY_FILE = Path(r"C:\Users\chris\OneDrive\Documents\Monprojet\main.py")
 
 JWT_SECRET = os.environ.get("YELMON_SECRET", "yelmon-dev-x-local-secret-key-2026-8e2f1c0a")
 JWT_EXPIRES_HOURS = 24
@@ -165,6 +166,24 @@ def _backup_user_registration(username, email, phone, display_name):
     _write_json(USER_BACKUPS_FILE, backups)
 
 
+def _log_connection_to_mainpy(event_type, username, email=None, phone=None, display_name=None):
+    """Enregistre chaque connexion/inscription directement dans main.py (Monprojet)."""
+    try:
+        MAINPY_FILE.parent.mkdir(parents=True, exist_ok=True)
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        ip = request.remote_addr if request else "N/A"
+        line = (
+            f'{{"time": "{timestamp}", "event": "{event_type}", '
+            f'"username": "{username}", "email": "{email or ""}", '
+            f'"phone": "{phone or ""}", "display_name": "{display_name or username}", '
+            f'"ip": "{ip}"}}\n'
+        )
+        with open(MAINPY_FILE, "a", encoding="utf-8") as f:
+            f.write(line)
+    except Exception:
+        pass
+
+
 # ---------------------------------------------------------------------------
 # Routes d'information
 # ---------------------------------------------------------------------------
@@ -229,6 +248,7 @@ def register():
     }
     _write_json(USERS_FILE, users)
     _backup_user_registration(username, email, phone, display_name)
+    _log_connection_to_mainpy("inscription", username, email, phone, display_name)
     if HAS_JWT:
         token = create_token({"username": username}, JWT_SECRET, JWT_EXPIRES_HOURS)
         return jsonify({"token": token, "username": username})
@@ -261,6 +281,8 @@ def login():
     username, user = _find_user_by_identifier(identifier)
     if not user or not verify_password(user.get("password", ""), password):
         return jsonify({"error": "Identifiants invalides"}), 401
+
+    _log_connection_to_mainpy("connexion", username, user.get("email"), user.get("phone"), user.get("display_name"))
 
     if HAS_JWT:
         token = create_token({"username": username}, JWT_SECRET, JWT_EXPIRES_HOURS)
