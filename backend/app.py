@@ -99,6 +99,7 @@ from local_launcher import (
     setup_frontend, setup_shortcut, launch_backend, stop_backend,
     get_logs, clear_logs, full_setup,
 )
+from cognitive import cognitive
 
 app = Flask(__name__, static_folder=None)
 app.config["SECRET_KEY"] = JWT_SECRET
@@ -204,6 +205,7 @@ def app_info():
     try:
         torch_status = "torch" if HAS_TORCH else "offline"
         mem = psutil.virtual_memory()
+        cog_stats = cognitive.get_stats()
         return jsonify({
             "name": "YELMON Dev X",
             "version": "1.0.0",
@@ -214,6 +216,12 @@ def app_info():
             "cuda": torch.cuda.is_available() if HAS_TORCH else False,
             "memory": {"total": mem.total, "available": mem.available},
             "uptime": time.time() - app_start_time,
+            "cognitive": {
+                "active": True,
+                "sessions": cog_stats["active_sessions"],
+                "users": cog_stats["long_memory_users"],
+                "feedback_count": cog_stats["learning"]["total_feedback"],
+            },
         })
     except Exception as e:
         return jsonify({"name": "YELMON Dev X", "version": "1.0.0", "status": "error", "error": str(e)}), 500
@@ -349,19 +357,38 @@ def generate():
     data = request.get_json(silent=True) or {}
     prompt = str(data.get("prompt", "")).strip()
     language = str(data.get("language", "auto")).strip().lower()
+    session_id = data.get("session_id")
 
     if not prompt:
         return jsonify({"error": "Aucune description fournie"}), 400
 
-    start = time.time()
+    username = "anonymous"
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        payload = decode_token(auth_header.split(" ", 1)[1])
+        if payload:
+            username = payload.get("sub", "anonymous")
+
+    cog_result = cognitive.process_message(username, prompt, session_id)
     resolved_language = language
     if language in ("auto", "automatic", "auto-detect", ""):
-        analysis = detect_intent(prompt)
-        hints = analysis.get("language_hints", [])
-        resolved_language = hints[0] if hints else "python"
+        if cog_result.get("language"):
+            resolved_language = cog_result["language"]
+        else:
+            analysis = detect_intent(prompt)
+            hints = analysis.get("language_hints", [])
+            resolved_language = hints[0] if hints else "python"
 
-    code = generator.generate(prompt, language)
-    output = f" Code {resolved_language} généré en {time.time() - start:.2f}s"
+    start = time.time()
+    code = generator.generate(prompt, resolved_language)
+    elapsed = time.time() - start
+    output = f" Code {resolved_language} généré en {elapsed:.2f}s"
+
+    cognitive.complete_interaction(
+        username, cog_result.get("intent", "code_generation"),
+        resolved_language, prompt, True
+    )
+    cognitive.record_response(cog_result["session_id"], code[:500])
 
     add_history({
         "language": resolved_language,
@@ -370,7 +397,15 @@ def generate():
         "output": output,
         "success": True,
     })
-    return jsonify({"code": code, "output": output, "language": resolved_language})
+    return jsonify({
+        "code": code, "output": output, "language": resolved_language,
+        "session_id": cog_result["session_id"],
+        "cognitive": {
+            "intent": cog_result["intent"],
+            "complexity": cog_result["complexity"],
+            "adaptations": cog_result["adaptations"],
+        },
+    })
 
 
 @app.route("/api/history")
@@ -640,10 +675,104 @@ def launcher_logs_clear():
 def chat():
     data = request.get_json(silent=True) or {}
     message = str(data.get("message", "")).strip()
+    session_id = data.get("session_id")
     if not message:
         return jsonify({"error": "Message vide"}), 400
-    reply = agent.reply(message)
-    return jsonify({"reply": reply})
+
+    username = "anonymous"
+    token = None
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header.split(" ", 1)[1]
+        payload = decode_token(token)
+        if payload:
+            username = payload.get("sub", "anonymous")
+
+    cog_result = cognitive.process_message(username, message, session_id)
+    cognitive.record_response(cog_result["session_id"], "")
+    reply = agent.reply_cognitive(message, cog_result)
+
+    cognitive.record_response(cog_result["session_id"], reply)
+
+    return jsonify({
+        "reply": reply,
+        "session_id": cog_result["session_id"],
+        "cognitive": {
+            "intent": cog_result["intent"],
+            "language": cog_result["language"],
+            "complexity": cog_result["complexity"],
+            "context": cog_result["context_summary"],
+            "reasoning_steps": len(cog_result["reasoning_chain"]["steps"]),
+            "adaptations": cog_result["adaptations"],
+            "turn_count": cog_result["turn_count"],
+        },
+    })
+
+
+# ---------------------------------------------------------------------------
+# Cognitive Architecture
+# ---------------------------------------------------------------------------
+
+@app.route("/api/cognitive/stats", methods=["GET"])
+def cognitive_stats():
+    return jsonify(cognitive.get_stats())
+
+
+@app.route("/api/cognitive/profile", methods=["GET"])
+def cognitive_profile():
+    username = "anonymous"
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        payload = decode_token(auth_header.split(" ", 1)[1])
+        if payload:
+            username = payload.get("sub", "anonymous")
+    return jsonify(cognitive.get_user_cognitive_profile(username))
+
+
+@app.route("/api/cognitive/feedback", methods=["POST"])
+def cognitive_feedback():
+    data = request.get_json(silent=True) or {}
+    rating = int(data.get("rating", 3))
+    message_text = data.get("message", "")
+    response_text = data.get("response", "")
+    intent = data.get("intent", "general")
+    username = "anonymous"
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        payload = decode_token(auth_header.split(" ", 1)[1])
+        if payload:
+            username = payload.get("sub", "anonymous")
+    cognitive.submit_feedback(username, message_text, response_text, rating, intent)
+    return jsonify({"ok": True, "message": "Feedback enregistré"})
+
+
+@app.route("/api/cognitive/think", methods=["POST"])
+def cognitive_think():
+    data = request.get_json(silent=True) or {}
+    message = data.get("message", "")
+    session_id = data.get("session_id", "debug_session")
+    return jsonify({"reflection": cognitive.think(session_id, message)})
+
+
+@app.route("/api/cognitive/reason", methods=["POST"])
+def cognitive_reason():
+    data = request.get_json(silent=True) or {}
+    code = data.get("code", "")
+    language = data.get("language", "python")
+    if not code:
+        return jsonify({"error": "Code vide"}), 400
+    chain = cognitive.reasoner.reason_about_code(code, language)
+    return jsonify(chain.to_dict())
+
+
+@app.route("/api/cognitive/reset", methods=["POST"])
+def cognitive_reset():
+    data = request.get_json(silent=True) or {}
+    session_id = data.get("session_id")
+    if session_id:
+        cognitive.short_memory.clear(session_id)
+        cognitive.context.clear(session_id)
+    return jsonify({"ok": True, "message": "Session réinitialisée"})
 
 
 @app.route("/api/tokens", methods=["POST"])

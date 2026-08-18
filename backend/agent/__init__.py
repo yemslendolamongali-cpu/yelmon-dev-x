@@ -370,3 +370,38 @@ class YelmonAgent:
             "- Répondre à vos questions sur le développement\n"
             "Que souhaitez-vous faire ?"
         )
+
+    def reply_cognitive(self, message: str, cognitive_result: dict) -> str:
+        """Réponse enrichie par le système cognitif."""
+        intent = cognitive_result.get("intent", "general")
+        language = cognitive_result.get("language")
+        complexity = cognitive_result.get("complexity", "simple")
+        adaptations = cognitive_result.get("adaptations", {})
+        ref = cognitive_result.get("reference_resolved")
+        turn = cognitive_result.get("turn_count", 1)
+
+        base = self.reply(message)
+
+        if ref:
+            base = f"(Référence détectée: {ref})\n{base}"
+
+        if turn == 1 and intent != "greeting":
+            profile_summary = cognitive_result.get("user_profile_summary", "")
+            if profile_summary:
+                level = "intermédiaire"
+                if "beginner" in profile_summary:
+                    level = "débutant"
+                elif "advanced" in profile_summary:
+                    level = "avancé"
+                base = f"[Niveau détecté: {level}] {base}"
+
+        if adaptations.get("add_explanations") and intent in ("code_generation", "explanation"):
+            base += "\n\n💡 N'hésitez pas à demander des explications sur chaque partie du code."
+
+        if adaptations.get("add_examples") and complexity == "complex":
+            base += "\n\n📝 Je peux fournir des exemples d'utilisation si vous le souhaitez."
+
+        if adaptations.get("detail_level") == "concise" and intent in ("code_generation",):
+            base = base.split("\n")[0] + "\n(Voici le code directement, comme vous semblez préférer les réponses concises.)"
+
+        return base
