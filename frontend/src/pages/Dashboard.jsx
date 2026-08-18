@@ -260,6 +260,10 @@ function Dashboard() {
                         <span className="nav-icon">🛠</span>
                         Système
                     </div>
+                    <div className="nav-item" onClick={() => navigate('/local-deploy')}>
+                        <span className="nav-icon">🚀</span>
+                        Deploy local
+                    </div>
                     <div className="nav-item" onClick={() => navigate('/update-admin')}>
                         <span className="nav-icon">🔄</span>
                         Mise à jour

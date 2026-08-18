@@ -19,6 +19,7 @@ import BackendDev from './pages/BackendDev';
 import UpdateAdmin from './pages/UpdateAdmin';
 import CodeAnalyzer from './pages/CodeAnalyzer';
 import SystemAdmin from './pages/SystemAdmin';
+import LocalDeploy from './pages/LocalDeploy';
 
 function ProtectedRoute({ children }) {
     const { user, loading } = useAuth();
@@ -63,6 +64,7 @@ function App() {
                     <Route path="/update-admin" element={<ProtectedRoute><UpdateAdmin /></ProtectedRoute>} />
                     <Route path="/analyze" element={<ProtectedRoute><CodeAnalyzer /></ProtectedRoute>} />
                     <Route path="/system-admin" element={<ProtectedRoute><SystemAdmin /></ProtectedRoute>} />
+                    <Route path="/local-deploy" element={<ProtectedRoute><LocalDeploy /></ProtectedRoute>} />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
             </div>

@@ -94,6 +94,11 @@ from system_admin import (
     get_processes, build_frontend_local, install_deps_local,
     create_full_backup, list_backups_local, get_reconstruction_scripts,
 )
+from local_launcher import (
+    get_status as get_launcher_status, setup_venv, setup_requirements,
+    setup_frontend, setup_shortcut, launch_backend, stop_backend,
+    get_logs, clear_logs, full_setup,
+)
 
 app = Flask(__name__, static_folder=None)
 app.config["SECRET_KEY"] = JWT_SECRET
@@ -573,6 +578,62 @@ def system_backup():
 @app.route("/api/system/backups")
 def system_backups():
     return jsonify(list_backups_local())
+
+
+# ---------------------------------------------------------------------------
+# Local Launcher — merged from YELMON_Launcher.py, installer.py, auto_deploy.py
+# ---------------------------------------------------------------------------
+
+@app.route("/api/launcher/status")
+def launcher_status():
+    return jsonify(get_launcher_status())
+
+
+@app.route("/api/launcher/setup/venv", methods=["POST"])
+def launcher_setup_venv():
+    return jsonify(setup_venv())
+
+
+@app.route("/api/launcher/setup/deps", methods=["POST"])
+def launcher_setup_deps():
+    return jsonify(setup_requirements())
+
+
+@app.route("/api/launcher/setup/frontend", methods=["POST"])
+def launcher_setup_frontend():
+    return jsonify(setup_frontend())
+
+
+@app.route("/api/launcher/setup/shortcut", methods=["POST"])
+def launcher_setup_shortcut():
+    return jsonify(setup_shortcut())
+
+
+@app.route("/api/launcher/setup/full", methods=["POST"])
+def launcher_setup_full():
+    return jsonify(full_setup())
+
+
+@app.route("/api/launcher/start", methods=["POST"])
+def launcher_start():
+    return jsonify(launch_backend())
+
+
+@app.route("/api/launcher/stop", methods=["POST"])
+def launcher_stop():
+    return jsonify(stop_backend())
+
+
+@app.route("/api/launcher/logs")
+def launcher_logs():
+    lines = request.args.get("lines", 100, type=int)
+    return jsonify(get_logs(lines))
+
+
+@app.route("/api/launcher/logs/clear", methods=["POST"])
+def launcher_logs_clear():
+    clear_logs()
+    return jsonify({"ok": True})
 
 
 @app.route("/api/chat", methods=["POST"])
