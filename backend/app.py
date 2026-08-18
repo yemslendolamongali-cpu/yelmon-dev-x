@@ -23,6 +23,7 @@ import threading
 import subprocess
 import tempfile
 import re
+import ast
 from pathlib import Path
 from datetime import datetime, timedelta, timezone
 from functools import wraps
@@ -773,6 +774,61 @@ def cognitive_reset():
         cognitive.short_memory.clear(session_id)
         cognitive.context.clear(session_id)
     return jsonify({"ok": True, "message": "Session réinitialisée"})
+
+
+# ---------------------------------------------------------------------------
+# Hypothesis Engine
+# ---------------------------------------------------------------------------
+
+@app.route("/api/hypothesis/fix", methods=["POST"])
+def hypothesis_fix():
+    data = request.get_json(silent=True) or {}
+    code = data.get("code", "")
+    language = data.get("language", "python")
+    errors = data.get("errors", [])
+    if not code:
+        return jsonify({"error": "Code requis"}), 400
+    if not errors:
+        try:
+            if language == "python":
+                ast.parse(code)
+            errors = []
+        except SyntaxError as e:
+            errors = [{"line": e.lineno, "msg": e.msg, "type": "syntax"}]
+    result = cognitive.solve_fix(code, errors, language)
+    return jsonify(result)
+
+
+@app.route("/api/hypothesis/generate", methods=["POST"])
+def hypothesis_generate():
+    data = request.get_json(silent=True) or {}
+    prompt = data.get("prompt", "")
+    language = data.get("language", "python")
+    if not prompt:
+        return jsonify({"error": "Prompt requis"}), 400
+    result = cognitive.solve_generation(prompt, language)
+    return jsonify(result)
+
+
+@app.route("/api/hypothesis/optimize", methods=["POST"])
+def hypothesis_optimize():
+    data = request.get_json(silent=True) or {}
+    code = data.get("code", "")
+    language = data.get("language", "python")
+    if not code:
+        return jsonify({"error": "Code requis"}), 400
+    result = cognitive.solve_optimization(code, language)
+    return jsonify(result)
+
+
+@app.route("/api/hypothesis/stats", methods=["GET"])
+def hypothesis_stats():
+    return jsonify(cognitive.get_hypothesis_stats())
+
+
+@app.route("/api/hypothesis/history", methods=["GET"])
+def hypothesis_history():
+    return jsonify({"history": cognitive.hypothesis.get_history()})
 
 
 @app.route("/api/tokens", methods=["POST"])

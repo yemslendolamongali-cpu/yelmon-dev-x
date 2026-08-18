@@ -1,7 +1,7 @@
 """YELMON Dev X - Architecture Cognitive Intégrée.
 
-Orchestrateur qui connecte mémoire, raisonnement, apprentissage et contexte
-en un système cohérent pour des réponses intelligentes et adaptatives.
+Orchestrateur qui connecte mémoire, raisonnement, apprentissage, contexte
+et moteur d'hypothèses en un système cohérent pour des réponses intelligentes.
 """
 
 import time
@@ -11,6 +11,7 @@ from .memory import ShortTermMemory, LongTermMemory
 from .reasoning import CognitiveReasoner, ReasoningChain
 from .learning import AdaptiveLearner
 from .context import ConversationContext
+from .hypothesis import HypothesisEngine, hypothesis_engine
 
 
 class CognitiveArchitecture:
@@ -22,6 +23,7 @@ class CognitiveArchitecture:
         self.reasoner = CognitiveReasoner()
         self.learner = AdaptiveLearner()
         self.context = ConversationContext()
+        self.hypothesis = HypothesisEngine()
         self._active_sessions: dict[str, dict] = {}
 
     def process_message(self, username: str, message: str,
@@ -110,6 +112,7 @@ class CognitiveArchitecture:
             "long_memory_users": len(self.long_memory._data.get("users", {})),
             "learning": self.learner.get_learning_stats(),
             "context_sessions": len(self.context._sessions),
+            "hypothesis": self.hypothesis.get_stats(),
         }
 
     def get_user_cognitive_profile(self, username: str) -> dict:
@@ -136,9 +139,27 @@ class CognitiveArchitecture:
             f"Contraintes: {ctx.get('constraints', [])}",
             f"Références: funcs={ctx.get('mentioned_functions', [])}",
             f"Objectif: {ctx.get('conversation_goal', 'N/A')}",
+            f"Hypothèses: {self.hypothesis.get_stats()}",
             f"==========================",
         ]
         return "\n".join(parts)
+
+    def solve_fix(self, code: str, errors: list[dict], language: str) -> dict:
+        """Résout des erreurs de code via le moteur d'hypothèses."""
+        return self.hypothesis.solve_fix(code, errors, language)
+
+    def solve_generation(self, prompt: str, language: str,
+                         context: dict = None) -> dict:
+        """Génère et teste plusieurs solutions possibles."""
+        return self.hypothesis.solve_generation(prompt, language, context)
+
+    def solve_optimization(self, code: str, language: str) -> dict:
+        """Optimise du code via le moteur d'hypothèses."""
+        return self.hypothesis.solve_optimization(code, language)
+
+    def get_hypothesis_stats(self) -> dict:
+        """Statistiques du moteur d'hypothèses."""
+        return self.hypothesis.get_stats()
 
     def _parse_field(self, text: str, field: str) -> str:
         for part in text.split(","):
