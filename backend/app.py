@@ -676,6 +676,8 @@ def contact():
         "message": message,
         "timestamp": int(time.time() * 1000),
         "read": False,
+        "reply": None,
+        "replied_at": None,
     }
 
     messages = _read_json(CONTACT_FILE, [])
@@ -699,6 +701,38 @@ def delete_contact(contact_id):
     messages = [m for m in messages if m.get("id") != contact_id] if isinstance(messages, list) else []
     _write_json(CONTACT_FILE, messages)
     return jsonify({"ok": True})
+
+
+@app.route("/api/contact/<contact_id>/reply", methods=["POST"])
+def reply_contact(contact_id):
+    data = request.get_json(silent=True) or {}
+    reply_text = str(data.get("reply", "")).strip()
+    if not reply_text:
+        return jsonify({"error": "Réponse vide"}), 400
+    messages = _read_json(CONTACT_FILE, [])
+    if not isinstance(messages, list):
+        return jsonify({"error": "Aucun message"}), 404
+    for m in messages:
+        if m.get("id") == contact_id:
+            m["reply"] = reply_text
+            m["replied_at"] = int(time.time() * 1000)
+            m["read"] = True
+            _write_json(CONTACT_FILE, messages)
+            return jsonify({"ok": True, "message": "Réponse envoyée"})
+    return jsonify({"error": "Message non trouvé"}), 404
+
+
+@app.route("/api/contact/<contact_id>/read", methods=["POST"])
+def mark_read_contact(contact_id):
+    messages = _read_json(CONTACT_FILE, [])
+    if not isinstance(messages, list):
+        return jsonify({"error": "Aucun message"}), 404
+    for m in messages:
+        if m.get("id") == contact_id:
+            m["read"] = True
+            _write_json(CONTACT_FILE, messages)
+            return jsonify({"ok": True})
+    return jsonify({"error": "Message non trouvé"}), 404
 
 
 # ---------------------------------------------------------------------------
