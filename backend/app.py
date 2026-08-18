@@ -831,6 +831,55 @@ def hypothesis_history():
     return jsonify({"history": cognitive.hypothesis.get_history()})
 
 
+# ---------------------------------------------------------------------------
+# Counterfactual Engine
+# ---------------------------------------------------------------------------
+
+@app.route("/api/counterfactual/analyze", methods=["POST"])
+def counterfactual_analyze():
+    data = request.get_json(silent=True) or {}
+    code = data.get("code", "")
+    language = data.get("language", "python")
+    if not code:
+        return jsonify({"error": "Code requis"}), 400
+    result = cognitive.analyze_counterfactual_code(code, language)
+    return jsonify(result)
+
+
+@app.route("/api/counterfactual/decision", methods=["POST"])
+def counterfactual_decision():
+    data = request.get_json(silent=True) or {}
+    decision = data.get("decision", "")
+    context = data.get("context", "")
+    language = data.get("language", "python")
+    if not decision:
+        return jsonify({"error": "Décision requise"}), 400
+    result = cognitive.analyze_counterfactual_decision(decision, context, language)
+    return jsonify(result)
+
+
+@app.route("/api/counterfactual/paths", methods=["POST"])
+def counterfactual_paths():
+    data = request.get_json(silent=True) or {}
+    code = data.get("code", "")
+    decisions = data.get("decisions", [])
+    language = data.get("language", "python")
+    if not code:
+        return jsonify({"error": "Code requis"}), 400
+    result = cognitive.explore_counterfactual_paths(code, decisions, language)
+    return jsonify(result)
+
+
+@app.route("/api/counterfactual/stats", methods=["GET"])
+def counterfactual_stats():
+    return jsonify(cognitive.get_counterfactual_stats())
+
+
+@app.route("/api/counterfactual/history", methods=["GET"])
+def counterfactual_history():
+    return jsonify({"history": cognitive.counterfactual.get_history()})
+
+
 @app.route("/api/tokens", methods=["POST"])
 def tokens():
     data = request.get_json(silent=True) or {}

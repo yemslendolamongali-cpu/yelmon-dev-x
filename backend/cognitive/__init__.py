@@ -1,7 +1,7 @@
 """YELMON Dev X - Architecture Cognitive Intégrée.
 
-Orchestrateur qui connecte mémoire, raisonnement, apprentissage, contexte
-et moteur d'hypothèses en un système cohérent pour des réponses intelligentes.
+Orchestrateur qui connecte mémoire, raisonnement, apprentissage, contexte,
+moteur d'hypothèses et générateur contre-factuel en un système cohérent.
 """
 
 import time
@@ -12,6 +12,7 @@ from .reasoning import CognitiveReasoner, ReasoningChain
 from .learning import AdaptiveLearner
 from .context import ConversationContext
 from .hypothesis import HypothesisEngine, hypothesis_engine
+from .counterfactual import CounterfactualEngine, counterfactual_engine
 
 
 class CognitiveArchitecture:
@@ -24,6 +25,7 @@ class CognitiveArchitecture:
         self.learner = AdaptiveLearner()
         self.context = ConversationContext()
         self.hypothesis = HypothesisEngine()
+        self.counterfactual = CounterfactualEngine()
         self._active_sessions: dict[str, dict] = {}
 
     def process_message(self, username: str, message: str,
@@ -113,6 +115,7 @@ class CognitiveArchitecture:
             "learning": self.learner.get_learning_stats(),
             "context_sessions": len(self.context._sessions),
             "hypothesis": self.hypothesis.get_stats(),
+            "counterfactual": self.counterfactual.get_stats(),
         }
 
     def get_user_cognitive_profile(self, username: str) -> dict:
@@ -160,6 +163,24 @@ class CognitiveArchitecture:
     def get_hypothesis_stats(self) -> dict:
         """Statistiques du moteur d'hypothèses."""
         return self.hypothesis.get_stats()
+
+    def analyze_counterfactual_code(self, code: str, language: str) -> dict:
+        """Analyse contre-factuelle du code avec alternatives."""
+        return self.counterfactual.analyze_code(code, language)
+
+    def analyze_counterfactual_decision(self, decision: str, context: str,
+                                        language: str) -> dict:
+        """Analyse contre-factuelle d'une décision."""
+        return self.counterfactual.analyze_decision(decision, context, language)
+
+    def explore_counterfactual_paths(self, code: str, decisions: list[dict],
+                                     language: str) -> dict:
+        """Explore les chemins alternatifs."""
+        return self.counterfactual.explore_paths(code, decisions, language)
+
+    def get_counterfactual_stats(self) -> dict:
+        """Statistiques du générateur contre-factuel."""
+        return self.counterfactual.get_stats()
 
     def _parse_field(self, text: str, field: str) -> str:
         for part in text.split(","):
