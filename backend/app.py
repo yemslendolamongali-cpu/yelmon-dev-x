@@ -45,6 +45,7 @@ USERS_FILE = DATA_DIR / "users.json"
 STATS_FILE = DATA_DIR / "stats.json"
 CONTACT_FILE = DATA_DIR / "contact.json"
 USER_BACKUPS_FILE = DATA_DIR / "user_backups.json"
+ANALYSIS_HISTORY_FILE = DATA_DIR / "analysis_history.json"
 MAINPY_FILE = Path(r"C:\Users\chris\OneDrive\Documents\Monprojet\main.py")
 
 JWT_SECRET = os.environ.get("YELMON_SECRET", "yelmon-dev-x-local-secret-key-2026-8e2f1c0a")
@@ -562,6 +563,164 @@ def code_check():
         return jsonify({"error": "Code vide"}), 400
     result = analyze_code(code, language, fix)
     return jsonify(result)
+
+
+def _generate_diff(original: str, fixed: str) -> list:
+    """Génère un diff ligne par ligne entre original et fixed."""
+    orig_lines = original.splitlines()
+    fixed_lines = fixed.splitlines()
+    diff = []
+    max_len = max(len(orig_lines), len(fixed_lines))
+    for i in range(max_len):
+        o = orig_lines[i] if i < len(orig_lines) else None
+        f = fixed_lines[i] if i < len(fixed_lines) else None
+        if o == f:
+            diff.append({"line": i + 1, "type": "context", "content": o or ""})
+        else:
+            if o is not None:
+                diff.append({"line": i + 1, "type": "removed", "content": o})
+            if f is not None:
+                diff.append({"line": i + 1, "type": "added", "content": f})
+    return diff
+
+
+def _save_analysis_history(entry: dict):
+    """Sauvegarde une analyse dans l'historique (max 50 entrées)."""
+    history = _read_json(ANALYSIS_HISTORY_FILE, [])
+    if not isinstance(history, list):
+        history = []
+    history.insert(0, entry)
+    _write_json(ANALYSIS_HISTORY_FILE, history[:50])
+
+
+@app.route("/api/code/full-analyze", methods=["POST"])
+def code_full_analyze():
+    """Analyse unifiée : syntaxe + bugs + suggestions + refactorisation + auto-fix + diff."""
+    data = request.get_json(silent=True) or {}
+    code = str(data.get("code", ""))
+    language = str(data.get("language", "auto")).strip().lower()
+    fix = bool(data.get("fix", False))
+
+    if not code.strip():
+        return jsonify({"error": "Code vide"}), 400
+
+    # 1. Analyse syntaxe + qualité + auto-fix (code_analyzer)
+    syntax_result = analyze_code(code, language, fix)
+
+    # 2. Analyse profonde bugs + suggestions + refactorisation (agent)
+    deep_result = agent.analyze(code)
+
+    # 3. Refactoring suggestions
+    refactor = agent.refactor_suggestions(code)
+
+    # 4. Diff si fix demandé
+    diff = []
+    if fix and syntax_result.get("has_fix") and syntax_result.get("fixed_code"):
+        diff = _generate_diff(code, syntax_result["fixed_code"])
+
+    # 5. Score combiné
+    syntax_score = syntax_result.get("score", 0)
+    deep_score = deep_result.get("score", 0)
+    combined_score = int((syntax_score * 0.5) + (deep_score * 0.5))
+
+    result = {
+        "language": syntax_result.get("language", "unknown"),
+        "score": combined_score,
+        "grade": "A+" if combined_score >= 90 else "A" if combined_score >= 80 else "B" if combined_score >= 70 else "C" if combined_score >= 60 else "D" if combined_score >= 50 else "F",
+        "syntax": {
+            "errors": syntax_result.get("errors", []),
+            "quality_issues": syntax_result.get("quality_issues", []),
+            "summary": syntax_result.get("summary", {}),
+        },
+        "deep": {
+            "bugs": deep_result.get("bugs", []),
+            "warnings": deep_result.get("warnings", []),
+            "suggestions": deep_result.get("suggestions", []),
+            "refactor": refactor,
+            "structure": {
+                "functions": deep_result.get("functions", []),
+                "classes": deep_result.get("classes", []),
+                "imports": deep_result.get("imports", []),
+                "decorators": deep_result.get("decorators", []),
+                "docstrings": deep_result.get("docstrings", 0),
+                "complexity": deep_result.get("complexity", 1),
+            },
+            "metrics": {
+                "lines": deep_result.get("lines", 0),
+                "code_lines": deep_result.get("code_lines", 0),
+                "comment_lines": deep_result.get("comment_lines", 0),
+                "blank_lines": deep_result.get("blank_lines", 0),
+            },
+        },
+        "fixed_code": syntax_result.get("fixed_code") if fix else None,
+        "has_fix": syntax_result.get("has_fix", False),
+        "diff": diff,
+    }
+
+    # 6. Sauvegarder dans l'historique
+    username = "anonymous"
+    auth_header = request.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        payload = decode_token(auth_header.split(" ", 1)[1], JWT_SECRET)
+        if payload:
+            username = payload.get("sub", "anonymous")
+
+    _save_analysis_history({
+        "id": str(uuid.uuid4()),
+        "username": username,
+        "language": result["language"],
+        "score": result["score"],
+        "grade": result["grade"],
+        "total_issues": result["syntax"]["summary"].get("total", 0) + len(result["deep"]["bugs"]),
+        "timestamp": int(time.time() * 1000),
+        "code_preview": code[:200],
+    })
+
+    return jsonify(result)
+
+
+@app.route("/api/code/upload", methods=["POST"])
+def code_upload():
+    """Upload un fichier code pour analyse."""
+    if "file" not in request.files:
+        return jsonify({"error": "Aucun fichier envoyé"}), 400
+
+    f = request.files["file"]
+    if not f.filename:
+        return jsonify({"error": "Nom de fichier vide"}), 400
+
+    ext = Path(f.filename).suffix.lower()
+    LANG_MAP = {
+        ".py": "python", ".js": "javascript", ".jsx": "javascript",
+        ".ts": "javascript", ".tsx": "javascript",
+        ".html": "html", ".htm": "html",
+        ".java": "java", ".go": "go", ".rs": "rust",
+        ".cpp": "cpp", ".cc": "cpp", ".c": "cpp", ".h": "cpp",
+        ".css": "html", ".json": "javascript",
+    }
+    language = LANG_MAP.get(ext, "auto")
+
+    code = f.read().decode("utf-8", errors="replace")
+    if not code.strip():
+        return jsonify({"error": "Fichier vide"}), 400
+
+    return jsonify({"code": code, "language": language, "filename": f.filename})
+
+
+@app.route("/api/code/history")
+def code_history():
+    """Retourne l'historique des analyses."""
+    history = _read_json(ANALYSIS_HISTORY_FILE, [])
+    if not isinstance(history, list):
+        history = []
+    return jsonify({"history": history[:50]})
+
+
+@app.route("/api/code/history/clear", methods=["POST"])
+def code_history_clear():
+    """Efface l'historique des analyses."""
+    _write_json(ANALYSIS_HISTORY_FILE, [])
+    return jsonify({"ok": True})
 
 
 # ---------------------------------------------------------------------------
