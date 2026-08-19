@@ -1,9 +1,18 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 import './Legal.css';
+
+const ADMIN_USERNAMES = ['yems', "01yem's"];
 
 function Legal() {
     const navigate = useNavigate();
+    const { user } = useAuth();
+    const isAdmin = ADMIN_USERNAMES.includes(user?.username);
+
+    const authorName = isAdmin ? 'Yems junior lendola' : 'L\'équipe YELMON';
+    const authorEmail = isAdmin ? 'yemsjuniorlendola@gmail.com' : 'support@yelmon.dev';
+    const authorLocation = isAdmin ? 'Kinshasa, RDC' : '***';
 
     return (
         <div className="legal-page">
@@ -28,7 +37,7 @@ function Legal() {
                             <p>
                                 Ce logiciel et l'ensemble de ses composants (code binaire, scripts,
                                 algorithmes, modèles, interfaces, designs, documentation) sont la
-                                propriété exclusive de <strong>Yems junior lendola</strong>. Toute
+                                propriété exclusive de <strong>{authorName}</strong>. Toute
                                 reproduction, copie, distribution, ingénierie inverse ou utilisation
                                 non autorisée est strictement interdite et constitue une atteinte
                                 aux droits de propriété intellectuelle passible de poursuites
@@ -42,7 +51,7 @@ function Legal() {
                         <p>
                             Le présent document établit les conditions régissant l'utilisation du
                             logiciel <strong>YELMON Dev X</strong> (ci-après « le Logiciel »),
-                            édité et développé exclusivement par <strong>Yems junior lendola</strong>
+                            édité et développé exclusivement par <strong>{authorName}</strong>
                             (ci-après « l'Auteur »). En installant, accédant ou utilisant le
                             Logiciel, l'utilisateur (ci-après « l'Utilisateur ») reconnaît avoir
                             pris connaissance des présentes conditions et s'engage à les respecter
@@ -384,7 +393,7 @@ function Legal() {
                         <p>
                             Avant toute action judiciaire, les parties s'engagent à tenter de
                             résoudre leurs différends par la médiation, pendant une durée minimum
-                            de trente (30) jours. La médiation sera conduite à Kinshasa, RDC,
+                            de trente (30) jours. La médiation sera conduite à {authorLocation},
                             par un médiateur agréé désigné d'un commun accord.
                         </p>
                     </section>
@@ -396,11 +405,11 @@ function Legal() {
                             d'autorisation ou signalement de violations, veuillez contacter :
                         </p>
                         <div className="legal-contact">
-                            <p><strong>Auteur & Éditeur :</strong> Yems junior lendola</p>
+                            <p><strong>Auteur & Éditeur :</strong> {authorName}</p>
                             <p><strong>Logiciel :</strong> YELMON Dev X</p>
-                            <p><strong>Email :</strong> yemsjuniorlendola@gmail.com</p>
+                            <p><strong>Email :</strong> {authorEmail}</p>
                             <p><strong>Version :</strong> 1.0.0</p>
-                            <p><strong>Juridiction :</strong> Kinshasa, RDC</p>
+                            <p><strong>Juridiction :</strong> {authorLocation}</p>
                         </div>
                     </section>
 
@@ -413,7 +422,7 @@ function Legal() {
                         <div className="legal-seal">
                             <div className="seal-mark">Y</div>
                             <div className="seal-text">
-                                <strong>© 2026 Yems junior lendola</strong>
+                                <strong>© 2026 {authorName}</strong>
                                 <span>Tous droits réservés</span>
                             </div>
                         </div>

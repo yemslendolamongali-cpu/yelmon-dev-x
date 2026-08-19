@@ -467,14 +467,14 @@ function Contact() {
                                 <span className="info-icon">📧</span>
                                 <div>
                                     <span className="info-label">Email</span>
-                                    <a href={`mailto:${CREATOR_EMAIL}`} className="info-value link">{CREATOR_EMAIL}</a>
+                                    <span className="info-value">Disponible après inscription</span>
                                 </div>
                             </div>
                             <div className="info-item">
                                 <span className="info-icon">🌍</span>
                                 <div>
                                     <span className="info-label">Localisation</span>
-                                    <span className="info-value">Kinshasa, RDC</span>
+                                    <span className="info-value">***</span>
                                 </div>
                             </div>
                             <div className="info-item">
@@ -485,14 +485,8 @@ function Contact() {
                                 </div>
                             </div>
                             <div className="info-divider"></div>
-                            <h3>Liens utiles</h3>
-                            <div className="info-links">
-                                <a href="https://github.com/yemsgithub" target="_blank" rel="noopener noreferrer" className="info-link">GitHub</a>
-                                <a href={`mailto:${CREATOR_EMAIL}`} className="info-link">Email direct</a>
-                            </div>
-                            <div className="info-divider"></div>
                             <div className="info-note">
-                                <p>Merci de ne pas envoyer de données sensibles (mots de passe, clés API…) via ce formulaire.</p>
+                                <p>Envoyez votre message via le formulaire. L'administrateur vous répondra dans la boîte de réception.</p>
                             </div>
                         </div>
                     </div>
