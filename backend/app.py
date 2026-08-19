@@ -366,7 +366,7 @@ def generate():
     username = "anonymous"
     auth_header = request.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
-        payload = decode_token(auth_header.split(" ", 1)[1])
+        payload = decode_token(auth_header.split(" ", 1)[1], JWT_SECRET)
         if payload:
             username = payload.get("sub", "anonymous")
 
@@ -685,7 +685,7 @@ def chat():
     auth_header = request.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
         token = auth_header.split(" ", 1)[1]
-        payload = decode_token(token)
+        payload = decode_token(token, JWT_SECRET)
         if payload:
             username = payload.get("sub", "anonymous")
 
@@ -724,7 +724,7 @@ def cognitive_profile():
     username = "anonymous"
     auth_header = request.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
-        payload = decode_token(auth_header.split(" ", 1)[1])
+        payload = decode_token(auth_header.split(" ", 1)[1], JWT_SECRET)
         if payload:
             username = payload.get("sub", "anonymous")
     return jsonify(cognitive.get_user_cognitive_profile(username))
@@ -740,7 +740,7 @@ def cognitive_feedback():
     username = "anonymous"
     auth_header = request.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
-        payload = decode_token(auth_header.split(" ", 1)[1])
+        payload = decode_token(auth_header.split(" ", 1)[1], JWT_SECRET)
         if payload:
             username = payload.get("sub", "anonymous")
     cognitive.submit_feedback(username, message_text, response_text, rating, intent)
@@ -905,7 +905,7 @@ def contact():
     username = "anonymous"
     auth_header = request.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
-        payload = decode_token(auth_header.split(" ", 1)[1])
+        payload = decode_token(auth_header.split(" ", 1)[1], JWT_SECRET)
         if payload:
             username = payload.get("sub", "anonymous")
 
@@ -943,7 +943,7 @@ def list_my_contacts():
     username = "anonymous"
     auth_header = request.headers.get("Authorization", "")
     if auth_header.startswith("Bearer "):
-        payload = decode_token(auth_header.split(" ", 1)[1])
+        payload = decode_token(auth_header.split(" ", 1)[1], JWT_SECRET)
         if payload:
             username = payload.get("sub", "anonymous")
     messages = _read_json(CONTACT_FILE, [])
