@@ -398,11 +398,55 @@ class HypothesisGenerator:
         optimized = code
         if language == "python":
             optimized = re.sub(
-                r"(\w+)\s*=\s*\[(.+?)\]\s*\n\s*for\s+(\w+)\s+in\s+\1",
-                r"for \3 in [{safe} for safe in [{safe2}]]".replace("{safe2}", "\\2"),
+                r"(\b(?:sum|any|all|max|min|set|frozenset)|\.join)\("
+                r"\s*\[((?:[^\[\]]|\[[^\[\]]*\])*)\]\s*\)",
+                self._to_generator,
                 optimized,
             )
+            optimized = self._lists_to_sets(optimized)
         return optimized
+
+    def _to_generator(self, match: re.Match) -> str:
+        inner = match.group(2)
+        if not re.search(r"\bfor\b", inner):
+            return match.group(0)
+        return f"{match.group(1)}({inner})"
+
+    def _lists_to_sets(self, code: str) -> str:
+        lines = code.splitlines()
+        definitions = {}
+        for i, line in enumerate(lines):
+            m = re.match(r"^(\s*)(\w+)\s*=\s*(\[.*\])\s*$", line)
+            if m:
+                inner = m.group(3)[1:-1].strip()
+                if "[" not in inner and "{" not in inner:
+                    definitions[m.group(2)] = i
+        for var, def_idx in definitions.items():
+            if self._used_membership_only(lines, var, def_idx):
+                decl = re.match(r"^(\s*)(\w+)\s*=\s*(\[.*\])\s*$", lines[def_idx])
+                indent, expr = decl.group(1), decl.group(3)
+                lines[def_idx] = f"{indent}{var} = set({expr})"
+        return "\n".join(lines)
+
+    def _used_membership_only(self, lines: list[str], var: str,
+                              def_idx: int) -> bool:
+        pattern = re.compile(rf"\b{re.escape(var)}\b")
+        used = False
+        for j, line in enumerate(lines):
+            if j == def_idx or line.strip().startswith("#"):
+                continue
+            for match in pattern.finditer(line):
+                used = True
+                before = line[:match.start()].rstrip()
+                if before.endswith(" not in"):
+                    loop_check = before[:-7]
+                elif before.endswith(" in"):
+                    loop_check = before[:-3]
+                else:
+                    return False
+                if re.search(r"\bfor\s+\w+(?:\s*,\s*\w+)*$", loop_check):
+                    return False
+        return used
 
     def _fix_indentation(self, code: str, language: str) -> str:
         lines = code.splitlines()

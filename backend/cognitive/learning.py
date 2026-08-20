@@ -84,6 +84,7 @@ class AdaptiveLearner:
         else:
             self._data["failed_patterns"][pattern_key] = \
                 self._data["failed_patterns"].get(pattern_key, 0) + 1
+        self._update_rules()
         self._save()
 
     def get_success_rate(self, intent: str) -> float:

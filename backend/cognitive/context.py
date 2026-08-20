@@ -204,7 +204,7 @@ class ConversationContext:
 
         file_matches = re.findall(r"[\w/\\]+\.\w{1,5}", text)
         for f in file_matches:
-            if f not in ctx["mentioned_files"] and "/" in f or "\\" in f:
+            if f not in ctx["mentioned_files"] and ("/" in f or "\\" in f):
                 ctx["mentioned_files"].append(f)
         ctx["mentioned_files"] = ctx["mentioned_files"][-5:]
 

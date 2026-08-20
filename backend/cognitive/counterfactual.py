@@ -232,6 +232,7 @@ class WhatIfAnalyzer:
             Scenario(
                 name="PostgreSQL — Production",
                 description="PostgreSQL: robuste, scalable, fonctionnalités avancées",
+                original="SQLite: limites de scalabilité et concurrence",
                 alternative="import psycopg2\n# ou via SQLAlchemy\nengine = create_engine('postgresql://user:pass@localhost/db')\n# JSON, full-text search, extensions",
                 constraints=["production", "scalable", "avancé"],
                 predicted_impact="Performance, fiabilité, fonctionnalités enterprise",
@@ -239,6 +240,7 @@ class WhatIfAnalyzer:
             Scenario(
                 name="MongoDB — NoSQL",
                 description="MongoDB: flexible, schéma dynamique, bon pour JSON",
+                original="SQL: schéma rigide, migrations coûteuses",
                 alternative="from pymongo import MongoClient\nclient = MongoClient()\ndb = client.mydb\ncollection = db.items\ncollection.insert_one({'name': 'item', 'price': 9.99})",
                 constraints=["flexible", "noSQL", "json-native"],
                 predicted_impact="Schéma flexible, bon pour données hétérogènes",
@@ -258,6 +260,7 @@ class WhatIfAnalyzer:
             Scenario(
                 name="Fonctions pures (Fonctionnel)",
                 description="Pas d'état mutable, transparence référentielle",
+                original="OOP: état mutable porté par self",
                 alternative="def process(data, db):\n    validated = validate(data)\n    saved = db.save(validated)\n    return saved",
                 constraints=["simple", "prévisible", "testable"],
                 predicted_impact="Plus facile à tester, pas d'effets de bord, parallélisable",
@@ -265,6 +268,7 @@ class WhatIfAnalyzer:
             Scenario(
                 name="Dataclasses + fonctions",
                 description="Données immutable + fonctions d'opération",
+                original="OOP: boilerplate __init__, getters, setters",
                 alternative="from dataclasses import dataclass\n@dataclass(frozen=True)\nclass Item:\n    name: str\n    price: float\ndef create_item(name, price): return Item(name, price)",
                 constraints=["moderne", "immutable", "type-safe"],
                 predicted_impact="Données prévisibles, pattern moderne Python 3.7+",
@@ -284,6 +288,7 @@ class WhatIfAnalyzer:
             Scenario(
                 name="Async — Concurrence I/O",
                 description="asyncio pour opérations I/O non bloquantes",
+                original="Sync: bloquant pour les opérations I/O",
                 alternative="import asyncio\nasync def process_all(items):\n    return await asyncio.gather(*[process(item) for item in items])",
                 constraints=["performant", "non-bloquant"],
                 predicted_impact="2-10x plus rapide pour I/O (réseau, fichiers, DB)",
@@ -291,6 +296,7 @@ class WhatIfAnalyzer:
             Scenario(
                 name="ThreadPool — Parallelisme CPU",
                 description="ThreadPoolExecutor pour tâches CPU-bound",
+                original="Sync: exécution séquentielle, un seul cœur utilisé",
                 alternative="from concurrent.futures import ThreadPoolExecutor\ndef process_all(items):\n    with ThreadPoolExecutor() as pool:\n        return list(pool.map(process, items))",
                 constraints=["parallèle", "multi-thread"],
                 predicted_impact="Utilise tous les cœurs CPU, idéal pour calcul intensif",
@@ -310,6 +316,7 @@ class WhatIfAnalyzer:
             Scenario(
                 name="Cache en mémoire",
                 description="Dict/simple TTL cache en mémoire",
+                original="Pas de cache: requête directe à chaque appel",
                 alternative="from functools import lru_cache\n@lru_cache(maxsize=128)\ndef get_item(item_id):\n    return db.query(item_id)",
                 constraints=["rapide", "sans dépendance"],
                 predicted_impact="10-100x plus rapide pour accès répétés, pas de dépendance externe",
@@ -317,6 +324,7 @@ class WhatIfAnalyzer:
             Scenario(
                 name="Redis — Cache distribué",
                 description="Redis pour cache partagé entre instances",
+                original="Cache local: non partagé entre instances/processus",
                 alternative="import redis\nr = redis.Redis()\ndef get_item(item_id):\n    cached = r.get(f'item:{item_id}')\n    if cached: return json.loads(cached)\n    item = db.query(item_id)\n    r.setex(f'item:{item_id}', 300, json.dumps(item))\n    return item",
                 constraints=["distribué", "scalable"],
                 predicted_impact="Cache partagé, TTL configurable, persistance",

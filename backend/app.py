@@ -369,7 +369,7 @@ def generate():
     if auth_header.startswith("Bearer "):
         payload = decode_token(auth_header.split(" ", 1)[1], JWT_SECRET)
         if payload:
-            username = payload.get("sub", "anonymous")
+            username = payload.get("username", "anonymous")
 
     cog_result = cognitive.process_message(username, prompt, session_id)
     resolved_language = language
@@ -663,7 +663,7 @@ def code_full_analyze():
     if auth_header.startswith("Bearer "):
         payload = decode_token(auth_header.split(" ", 1)[1], JWT_SECRET)
         if payload:
-            username = payload.get("sub", "anonymous")
+            username = payload.get("username", "anonymous")
 
     _save_analysis_history({
         "id": str(uuid.uuid4()),
@@ -846,10 +846,9 @@ def chat():
         token = auth_header.split(" ", 1)[1]
         payload = decode_token(token, JWT_SECRET)
         if payload:
-            username = payload.get("sub", "anonymous")
+            username = payload.get("username", "anonymous")
 
     cog_result = cognitive.process_message(username, message, session_id)
-    cognitive.record_response(cog_result["session_id"], "")
     reply = agent.reply_cognitive(message, cog_result)
 
     cognitive.record_response(cog_result["session_id"], reply)
@@ -885,14 +884,17 @@ def cognitive_profile():
     if auth_header.startswith("Bearer "):
         payload = decode_token(auth_header.split(" ", 1)[1], JWT_SECRET)
         if payload:
-            username = payload.get("sub", "anonymous")
+            username = payload.get("username", "anonymous")
     return jsonify(cognitive.get_user_cognitive_profile(username))
 
 
 @app.route("/api/cognitive/feedback", methods=["POST"])
 def cognitive_feedback():
     data = request.get_json(silent=True) or {}
-    rating = int(data.get("rating", 3))
+    try:
+        rating = max(1, min(5, int(data.get("rating", 3))))
+    except (TypeError, ValueError):
+        rating = 3
     message_text = data.get("message", "")
     response_text = data.get("response", "")
     intent = data.get("intent", "general")
@@ -901,7 +903,7 @@ def cognitive_feedback():
     if auth_header.startswith("Bearer "):
         payload = decode_token(auth_header.split(" ", 1)[1], JWT_SECRET)
         if payload:
-            username = payload.get("sub", "anonymous")
+            username = payload.get("username", "anonymous")
     cognitive.submit_feedback(username, message_text, response_text, rating, intent)
     return jsonify({"ok": True, "message": "Feedback enregistré"})
 
@@ -1066,7 +1068,7 @@ def contact():
     if auth_header.startswith("Bearer "):
         payload = decode_token(auth_header.split(" ", 1)[1], JWT_SECRET)
         if payload:
-            username = payload.get("sub", "anonymous")
+            username = payload.get("username", "anonymous")
 
     entry = {
         "id": str(uuid.uuid4()),
@@ -1104,7 +1106,7 @@ def list_my_contacts():
     if auth_header.startswith("Bearer "):
         payload = decode_token(auth_header.split(" ", 1)[1], JWT_SECRET)
         if payload:
-            username = payload.get("sub", "anonymous")
+            username = payload.get("username", "anonymous")
     messages = _read_json(CONTACT_FILE, [])
     if not isinstance(messages, list):
         messages = []

@@ -6,6 +6,7 @@ moteur d'hypothèses et générateur contre-factuel en un système cohérent.
 
 import time
 import uuid
+from typing import Optional
 
 from .memory import ShortTermMemory, LongTermMemory
 from .reasoning import CognitiveReasoner, ReasoningChain
@@ -182,11 +183,14 @@ class CognitiveArchitecture:
         """Statistiques du générateur contre-factuel."""
         return self.counterfactual.get_stats()
 
-    def _parse_field(self, text: str, field: str) -> str:
+    def _parse_field(self, text: str, field: str) -> Optional[str]:
         for part in text.split(","):
             part = part.strip()
             if part.startswith(f"{field}="):
-                return part.split("=", 1)[1].strip()
+                value = part.split("=", 1)[1].strip()
+                if value == "None":
+                    return None
+                return value
         return ""
 
 

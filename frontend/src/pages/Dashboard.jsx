@@ -110,6 +110,7 @@ function Dashboard() {
         setCode(DEFAULT_CODE);
         setOutput('');
         setSidebarOpen(false);
+        return newConv.id;
     };
 
     const switchConversation = (id) => {
@@ -133,10 +134,10 @@ function Dashboard() {
         }
     };
 
-    const addMessageToConversation = (role, content, extra = {}) => {
-        if (!activeConvId) return;
+    const addMessageToConversation = (role, content, extra = {}, convId = activeConvId) => {
+        if (!convId) return;
         setConversations(prev => prev.map(c => {
-            if (c.id !== activeConvId) return c;
+            if (c.id !== convId) return c;
             const newMsgs = [...c.messages, { role, content, timestamp: Date.now(), ...extra }];
             const title = c.messages.length === 0 && role === 'user'
                 ? content.slice(0, 40) + (content.length > 40 ? '…' : '')
@@ -157,10 +158,11 @@ function Dashboard() {
 
     const generateCode = async (promptText) => {
         if (!promptText.trim() || loading) return;
-        if (!activeConvId) createConversation();
+        let convId = activeConvId;
+        if (!convId) convId = createConversation();
         setLoading(true);
         setOutput(' YELMON analyse votre demande...');
-        addMessageToConversation('user', promptText);
+        addMessageToConversation('user', promptText, {}, convId);
         try {
             const res = await fetch('/api/generate', {
                 method: 'POST',
@@ -170,11 +172,11 @@ function Dashboard() {
             const data = await res.json();
             if (data.error) {
                 setOutput(` Erreur: ${data.error}`);
-                addMessageToConversation('ai', `Erreur: ${data.error}`);
+                addMessageToConversation('ai', `Erreur: ${data.error}`, {}, convId);
             } else {
                 setCode(data.code || '');
                 setOutput(data.output || '');
-                addMessageToConversation('ai', 'Code généré', { code: data.code, language, output: data.output });
+                addMessageToConversation('ai', 'Code généré', { code: data.code, language, output: data.output }, convId);
                 setHistory(prev => [
                     { language, prompt: promptText, timestamp: Date.now(), success: true },
                     ...prev,
@@ -182,7 +184,7 @@ function Dashboard() {
             }
         } catch (e) {
             setOutput(' Erreur de connexion au backend YELMON.');
-            addMessageToConversation('ai', 'Erreur de connexion au backend.');
+            addMessageToConversation('ai', 'Erreur de connexion au backend.', {}, convId);
         } finally {
             setLoading(false);
         }

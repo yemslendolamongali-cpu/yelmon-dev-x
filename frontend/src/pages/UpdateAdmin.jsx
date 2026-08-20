@@ -50,17 +50,17 @@ function UpdateAdmin() {
     const [polling, setPolling] = useState(false);
 
     const statusApi = useAdminApi('/api/admin/update/status');
-    const buildApi = useAdminApi('/api/admin/update/build');
-    const deployApi = useAdminApi('/api/admin/update/deploy');
-    const pullApi = useAdminApi('/api/admin/update/pull');
-    const fullApi = useAdminApi('/api/admin/update/full');
-    const backupApi = useAdminApi('/api/admin/update/backup');
+    const buildApi = useAdminApi('/api/admin/update/build', { method: 'POST' });
+    const deployApi = useAdminApi('/api/admin/update/deploy', { method: 'POST' });
+    const pullApi = useAdminApi('/api/admin/update/pull', { method: 'POST' });
+    const fullApi = useAdminApi('/api/admin/update/full', { method: 'POST' });
+    const backupApi = useAdminApi('/api/admin/update/backup', { method: 'POST' });
     const backupsApi = useAdminApi('/api/admin/update/backups');
     const gitLogApi = useAdminApi('/api/admin/update/git-log');
     const diskApi = useAdminApi('/api/admin/update/disk');
     const userBackupsApi = useAdminApi('/api/admin/users/backups');
     const userListApi = useAdminApi('/api/admin/users/list');
-    const userExportApi = useAdminApi('/api/admin/users/export');
+    const userExportApi = useAdminApi('/api/admin/users/export', { method: 'POST' });
 
     const refreshStatus = useCallback(async () => {
         const s = await statusApi.execute();

@@ -23,14 +23,13 @@ from pathlib import Path
 
 _PY_FIXES = [
     (r"except\s*:", "except Exception:"),
-    (r"print\s*\(([^)]*)\)\s*$", r"print(\1)"),
     (r"==\s*True\b", "is True"),
     (r"==\s*False\b", "is False"),
     (r"==\s*None\b", "is None"),
     (r"!=\s*None\b", "is not None"),
     (r"(\w+)\s*=\s*(\[|\{)\s*\]", r"\1 = \2]"),
     (r"for\s+(\w+)\s+in\s+range\(len\((\w+)\)\)\s*:", r"for \1 in range(len(\2)):"),
-    (r"import\s+(\w+)\s*,\s*(\w+)", r"import \1\nimport \2"),
+    (r"^(\s*)import\s+(\w+)\s*,\s*(\w+)", r"\1import \2\n\1import \3"),
 ]
 
 
@@ -135,15 +134,21 @@ def _auto_fix_python(code: str) -> str:
         else:
             result.append(ln)
 
-    # Corriger indentation cassée
-    for i, ln in enumerate(result):
-        stripped = ln.lstrip()
-        if stripped and not ln.startswith((" ", "\t")) and stripped not in (
-            "import", "from", "class", "def", "if", "for", "while", "try",
-            "except", "finally", "with", "elif", "else", "return", "raise",
-        ) and not stripped.startswith(("#", "@", '"""', "'''", "def ", "class ", "if ", "for ", "while ")):
-            if not ln.endswith(("\\", ":", ",", "(", "[", "{")):
-                result[i] = "    " + ln
+    # Corriger indentation cassée : n'indenter que les lignes réellement
+    # situées dans un bloc (c.-à-d. suivant une ligne se terminant par ":")
+    fixed_lines = []
+    in_block = False
+    for ln in result:
+        stripped = ln.strip()
+        if not stripped or stripped.startswith("#"):
+            fixed_lines.append(ln)
+            continue
+        if not ln.startswith((" ", "\t")) and in_block:
+            ln = "    " + ln
+            stripped = ln.strip()
+        in_block = stripped.endswith(":")
+        fixed_lines.append(ln)
+    result = fixed_lines
 
     return "\n".join(result)
 
