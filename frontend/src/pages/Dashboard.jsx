@@ -221,7 +221,10 @@ function Dashboard() {
 
     const saveToProject = () => {
         if (!selectedProjectId || !code.trim()) return;
-        const saved = JSON.parse(localStorage.getItem('yelmon_projects') || '[]');
+        let saved = [];
+        try {
+            saved = JSON.parse(localStorage.getItem('yelmon_projects') || '[]');
+        } catch { saved = []; }
         const updated = saved.map(p => {
             if (p.id === selectedProjectId) {
                 return {

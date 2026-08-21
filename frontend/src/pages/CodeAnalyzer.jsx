@@ -19,6 +19,13 @@ export default function CodeAnalyzer() {
   const [history, setHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   const [diffView, setDiffView] = useState("split");
+  const [historyNotice, setHistoryNotice] = useState(null);
+
+  useEffect(() => {
+    if (!historyNotice) return;
+    const t = setTimeout(() => setHistoryNotice(null), 6000);
+    return () => clearTimeout(t);
+  }, [historyNotice]);
 
   useEffect(() => {
     loadHistory();
@@ -143,6 +150,14 @@ export default function CodeAnalyzer() {
           </div>
         </div>
 
+        {historyNotice && (
+          <div className="history-notice" onClick={() => setHistoryNotice(null)}>
+            <span className="history-notice-text">ℹ️ {historyNotice.text}</span>
+            {historyNotice.preview && <pre className="history-notice-preview">{historyNotice.preview}</pre>}
+            <button className="history-notice-close">✕</button>
+          </div>
+        )}
+
         <div className="analyzer-layout">
           {showHistory && (
             <div className="history-sidebar">
@@ -153,7 +168,7 @@ export default function CodeAnalyzer() {
               <div className="history-list">
                 {history.length === 0 && <p className="history-empty">Aucune analyse</p>}
                 {history.map((h) => (
-                  <div key={h.id} className="history-item" onClick={() => { setCode(h.code_preview); setLanguage(h.language); setShowHistory(false); }}>
+                  <div key={h.id} className="history-item" onClick={() => { setHistoryNotice({ text: `Historique : analyse du ${new Date(h.timestamp).toLocaleString("fr-FR")}, grade ${h.grade}, ${h.language}`, preview: h.code_preview }); setShowHistory(false); }}>
                     <div className="history-item-top">
                       <span className={`history-grade ${getGradeClass(h.grade)}`}>{h.grade}</span>
                       <span className="history-lang">{h.language}</span>

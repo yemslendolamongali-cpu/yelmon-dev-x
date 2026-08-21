@@ -26,7 +26,7 @@ function Contact() {
     const [error, setError] = useState('');
 
     // Tab state
-    const [tab, setTab] = useState(isAdmin ? 'inbox' : 'inbox');
+    const [tab, setTab] = useState(isAdmin ? 'inbox' : 'send');
 
     // Inbox state (admin + user)
     const [messages, setMessages] = useState([]);
@@ -119,23 +119,27 @@ function Contact() {
     };
 
     const markRead = async (msgId) => {
-        const token = localStorage.getItem('yelmon_token');
-        const endpoint = isAdmin ? 'read' : 'user-read';
-        await fetch(`${API}/api/contact/${msgId}/${endpoint}`, {
-            method: 'POST',
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        loadMessages();
+        try {
+            const token = localStorage.getItem('yelmon_token');
+            const endpoint = isAdmin ? 'read' : 'user-read';
+            await fetch(`${API}/api/contact/${msgId}/${endpoint}`, {
+                method: 'POST',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            loadMessages();
+        } catch {}
     };
 
     const deleteMessage = async (msgId) => {
-        const token = localStorage.getItem('yelmon_token');
-        await fetch(`${API}/api/contact/${msgId}`, {
-            method: 'DELETE',
-            headers: token ? { Authorization: `Bearer ${token}` } : {},
-        });
-        setSelectedMsg(null);
-        loadMessages();
+        try {
+            const token = localStorage.getItem('yelmon_token');
+            await fetch(`${API}/api/contact/${msgId}`, {
+                method: 'DELETE',
+                headers: token ? { Authorization: `Bearer ${token}` } : {},
+            });
+            setSelectedMsg(null);
+            loadMessages();
+        } catch {}
     };
 
     const formatDate = (ts) => {
@@ -195,7 +199,7 @@ function Contact() {
                                                 <span className="inbox-time">{formatDate(m.timestamp)}</span>
                                             </div>
                                             <div className="inbox-subject">{subjectLabels[m.subject] || m.subject}</div>
-                                            <div className="inbox-preview">{m.message.slice(0, 80)}...</div>
+                                            <div className="inbox-preview">{(m.message || '').slice(0, 80)}...</div>
                                             {m.reply && <div className="inbox-replied-badge">✅ Répondu</div>}
                                             {!m.read && <div className="inbox-unread-dot" />}
                                         </div>
@@ -367,7 +371,7 @@ function Contact() {
                                             <span className="inbox-from">{subjectLabels[m.subject] || m.subject}</span>
                                             <span className="inbox-time">{formatDate(m.timestamp)}</span>
                                         </div>
-                                        <div className="inbox-preview">{m.message.slice(0, 80)}...</div>
+                                        <div className="inbox-preview">{(m.message || '').slice(0, 80)}...</div>
                                         {m.reply ? (
                                             <div className="inbox-replied-badge">💬 Réponse de l'admin</div>
                                         ) : (

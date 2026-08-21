@@ -159,7 +159,7 @@ class YelmonAgent:
         suggestions = []
 
         # Pas de type hints
-        func_no_hint = [fn for fn in functions if "->" not in code.split(f"def {fn}")[1].split("):")[0] if f"def {fn}" in code]
+        func_no_hint = [fn for fn in functions if f"def {fn}" in code and "->" not in code.split(f"def {fn}")[1].split("):")[0]]
         if func_no_hint:
             suggestions.append("Ajoutez des type hints aux fonctions (-> type, param: type)")
 

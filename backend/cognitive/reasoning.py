@@ -158,10 +158,6 @@ class CognitiveReasoner:
         return signals
 
     def _determine_intent(self, msg: str, signals: dict) -> str:
-        if signals.get("greeting"):
-            return "greeting"
-        if signals.get("thanks"):
-            return "thanks"
         if signals.get("has_bug"):
             return "bug_fix"
         if signals.get("wants_code"):
@@ -176,6 +172,10 @@ class CognitiveReasoner:
             return "tutorial"
         if signals.get("question"):
             return "question"
+        if signals.get("greeting"):
+            return "greeting"
+        if signals.get("thanks"):
+            return "thanks"
         return "general"
 
     def _infer_language(self, msg: str, signals: dict) -> Optional[str]:
