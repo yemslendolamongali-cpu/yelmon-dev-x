@@ -24,7 +24,7 @@ function Login() {
         setError('');
         setLoading(true);
         try {
-            await login(identifier, password);
+            await login(identifier, password, method);
             navigate('/');
         } catch (err) {
             setError(err.message);

@@ -27,11 +27,15 @@ export function AuthProvider({ children }) {
         }
     }, [token]);
 
-    const login = useCallback(async (identifier, password) => {
+    const login = useCallback(async (identifier, password, method = 'username') => {
+        const body = { password };
+        if (method === 'email') body.email = identifier;
+        else if (method === 'phone') body.phone = identifier;
+        else body.username = identifier;
         const res = await fetch('/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: identifier, password }),
+            body: JSON.stringify(body),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Erreur de connexion');
