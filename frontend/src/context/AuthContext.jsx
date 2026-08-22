@@ -2,29 +2,64 @@ import React, { createContext, useContext, useState, useEffect, useCallback } fr
 
 const AuthContext = createContext(null);
 
+function _verifyToken(token) {
+    return fetch('/api/auth/me', {
+        headers: { 'Authorization': `Bearer ${token}` },
+    }).then(async res => {
+        if (res.status === 401) return { valid: false };
+        if (!res.ok) throw new Error('network');
+        const data = await res.json();
+        return {
+            valid: true,
+            user: {
+                username: data.username,
+                role: data.role || 'user',
+                display_name: data.display_name || data.username,
+                email: data.email || '',
+                phone: data.phone || '',
+            },
+        };
+    });
+}
+
 export function AuthProvider({ children }) {
     const [user, setUser] = useState(null);
     const [token, setToken] = useState(() => localStorage.getItem('yelmon_token'));
     const [loading, setLoading] = useState(true);
 
+    const logout = useCallback(() => {
+        fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
+        localStorage.removeItem('yelmon_token');
+        setToken(null);
+        setUser(null);
+    }, []);
+
     useEffect(() => {
-        if (token) {
-            fetch('/api/auth/me', {
-                headers: { 'Authorization': `Bearer ${token}` },
-            })
-                .then(res => res.ok ? res.json() : Promise.reject())
-                .then(data => setUser({
-                    username: data.username,
-                    role: data.role || 'user',
-                    display_name: data.display_name || data.username,
-                    email: data.email || '',
-                    phone: data.phone || '',
-                }))
-                .catch(() => { logout(); })
-                .finally(() => setLoading(false));
-        } else {
-            setLoading(false);
-        }
+        if (!token) { setLoading(false); return; }
+        let cancelled = false;
+        const attempt = (retries) => {
+            _verifyToken(token)
+                .then(result => {
+                    if (cancelled) return;
+                    if (result.valid) {
+                        setUser(result.user);
+                    } else {
+                        localStorage.removeItem('yelmon_token');
+                        setToken(null);
+                    }
+                })
+                .catch(() => {
+                    if (cancelled) return;
+                    if (retries > 0) {
+                        setTimeout(() => attempt(retries - 1), 800);
+                    } else {
+                        setLoading(false);
+                    }
+                })
+                .finally(() => { if (!cancelled) setLoading(false); });
+        };
+        attempt(2);
+        return () => { cancelled = true; };
     }, [token]);
 
     const login = useCallback(async (identifier, password, method = 'username') => {
@@ -42,6 +77,7 @@ export function AuthProvider({ children }) {
         localStorage.setItem('yelmon_token', data.token);
         setToken(data.token);
         setUser({ username: data.username });
+        setLoading(false);
         return data;
     }, []);
 
@@ -62,14 +98,8 @@ export function AuthProvider({ children }) {
         localStorage.setItem('yelmon_token', data.token);
         setToken(data.token);
         setUser({ username: data.username });
+        setLoading(false);
         return data;
-    }, []);
-
-    const logout = useCallback(() => {
-        fetch('/api/auth/logout', { method: 'POST' }).catch(() => {});
-        localStorage.removeItem('yelmon_token');
-        setToken(null);
-        setUser(null);
     }, []);
 
     const deleteAccount = useCallback(async () => {
